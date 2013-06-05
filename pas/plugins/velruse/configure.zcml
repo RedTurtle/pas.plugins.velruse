@@ -1,0 +1,45 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:pas="http://namespaces.zope.org/pluggableauthservice"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="pas.plugins.velruse">
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <five:registerClass 
+        class=".plugin.VelruseUsers" 
+        meta_type="VelruseUsers" 
+        permission="zope2.ViewManagementScreens" 
+        addview="add-velruse-users-plugin"
+        /> 
+    
+  <pas:registerMultiPlugin
+        meta_type="VelruseUsers"
+      />
+
+  <browser:page
+        name="add-velruse-users-plugin"
+        for="zope.browser.interfaces.IAdding"
+        class=".plugin.AddForm"
+        permission="zope2.ViewManagementScreens"
+        />
+
+  <genericsetup:registerProfile
+        name="default"
+        title="Velruse authentication"
+        directory="profiles/default"
+        description="Allows users to log in with many social network through Velruse"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+      />     
+
+  <genericsetup:importStep
+        name="pas.plugins.velruse-various"
+        title="Additional Velruse Authentication setup"
+        description="PAS plugin installer"
+        handler=".setuphandlers.importVarious">
+        <depends name="rolemap"/>
+  </genericsetup:importStep>
+
+</configure>
