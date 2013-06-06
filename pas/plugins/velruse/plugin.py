@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from App.class_init import InitializeClass
+from AccessControl import ClassSecurityInfo
+
 from zope.interface import implements
 
 import requests
@@ -15,6 +18,9 @@ from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
 from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
 
+from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
+
+from pas.plugins.velruse import config
 from pas.plugins.velruse.interfaces import IVelrusePlugin
 
 
@@ -35,7 +41,7 @@ class AddForm(BrowserView):
                     '/manage_workspace?manage_tabs_message=Plugin+added.')
 
 
-class VelruseUsers(BasePlugin):
+class VelruseUsers(ZODBMutablePropertyProvider):
     """
     TODO
     """
@@ -46,13 +52,16 @@ class VelruseUsers(BasePlugin):
             IExtractionPlugin,
 #            ICredentialsResetPlugin,
             IAuthenticationPlugin,
-#            IPropertiesPlugin,
+            IPropertiesPlugin,
             IUserEnumerationPlugin,
 #            IUserFactoryPlugin,
             IRolesPlugin,
         )
     
+    security = ClassSecurityInfo()
+    
     def __init__(self, id, title=None):
+        super(VelruseUsers, self).__init__(id, title)
         self.__name__ = self.id = id
         self.title = title
         self.manage_addProperty('velruse_server_host', '127.0.0.1:5020', 'string')
@@ -60,6 +69,7 @@ class VelruseUsers(BasePlugin):
         self.manage_addProperty('given_roles', ['Member',], 'lines')
         #self._storage = OOBTree()
 
+    security.declarePrivate('getRolesForPrincipal')
     def getRolesForPrincipal(self, principal, request=None ):
 
         """ principal -> ( role_1, ... role_N )
@@ -68,12 +78,11 @@ class VelruseUsers(BasePlugin):
 
         o May assign roles based on values in the REQUEST object, if present.
         """
-        acl_users = getToolByName(self, 'acl_users')
-        vproperty = acl_users.velruse_users_properties
-        if vproperty._storage.get(principal.getId()):
+        if self._storage.get(principal.getId()):
             return tuple(self.getProperty('given_roles'))
         return ()
 
+    security.declarePrivate('extractCredentials')
     def extractCredentials(self, request):
         """ request -> {...}
 
@@ -86,6 +95,7 @@ class VelruseUsers(BasePlugin):
             return {'velruse-token': request.form.get('token')}
         return {}
 
+    security.declarePrivate('authenticateCredentials')
     def authenticateCredentials(self, credentials):
         """ credentials -> (userid, login)
 
@@ -109,9 +119,10 @@ class VelruseUsers(BasePlugin):
             acl_users = getToolByName(self, 'acl_users')
             username = user_data.get('username').encode('utf-8')
             acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
-            self._set_user_properties(user_data)
+            self._storage.insert(user_data.get('username'), user_data)
             return (username, username)
 
+    security.declarePrivate('enumerateUsers')
     def enumerateUsers(self, id=None, login=None, exact_match=False, sort_by=None, max_results=None, **kw):
         """ -> ( user_info_1, ... user_info_N )
 
@@ -153,30 +164,46 @@ class VelruseUsers(BasePlugin):
         o Insufficiently-specified criteria may have catastrophic
           scaling issues for some implementations.
         """
-        
-        acl_users = getToolByName(self, 'acl_users')
-        vproperty = acl_users.velruse_users_properties
-        if vproperty._storage.get(id):
+        if self._storage.get(id):
             return [{'id': id,
                     'login': id,
                     'plugin_id': self.getId()}]
         return ()
 
-#    def createUser(self, user_id, name):
-#        # Create a FacebookUser just if this is a Facebook User id 
-#        user_data = self._storage.get(user_id, None)
-#        if user_data is not None:
-#            return FacebookUser(user_id, name)
-#        
-#        return None
+#    security.declarePrivate('setPropertiesForUser')
+#    def setPropertiesForUser(self, user, propertysheet):
+#        """Set properties in the current plugin only if they are not originally read from Velruse"""
+#        properties = dict(propertysheet.propertyItems())
+#        for property_id in [p for p in properties.keys() if p in config.PROPERTIY_PROVIDERS_INFO.keys()]:
+#            for provider in config.PROPERTIY_PROVIDERS_INFO[property_id]:
+#                if user.getId().startswith("%s." % provider) and property_id in propertysheet._properties.keys():
+#                    # Do not change this value!
+#                    del propertysheet._properties[property_id]
+#                    # now the _schema, that is a readonly attribute :(
+#                    new_schema = []
+#                    for pid, pt in propertysheet._schema:
+#                        if pid==property_id:
+#                            continue
+#                        new_schema.append( (pid, pt) )
+#                    propertysheet._schema = tuple(new_schema)
+#        super(VelruseUsers, self).setPropertiesForUser(user, propertysheet)
 
-    def _set_user_properties(self, user_data):
-        """
-        Write user properties in the Velruse ZODB Mutable Property, if not exists
-        """
-        acl_users = getToolByName(self, 'acl_users')
-        vproperty = acl_users.velruse_users_properties
-        vproperty._storage.insert(user_data.get('username'), user_data)
+    security.declarePrivate('setPropertiesForUser')
+    def setPropertiesForUser(self, user, propertysheet):
+        """Set properties in the current plugin only if they are not originally read from Velruse"""
+        properties = dict(propertysheet.propertyItems())
+        for provider, given_properties in config.PROPERTIY_PROVIDERS_INFO.items():
+            if user.getId().startswith("%s." % provider):
+                for property_id in [p for p in given_properties if p in properties.keys()]:
+                    del propertysheet._properties[property_id]
+                    # now the _schema, that is a readonly attribute :(
+                    new_schema = []
+                    for pid, pt in propertysheet._schema:
+                        if pid==property_id:
+                            continue
+                        new_schema.append( (pid, pt) )
+                    propertysheet._schema = tuple(new_schema)
+                super(VelruseUsers, self).setPropertiesForUser(user, propertysheet)
 
     def _format_user_data(self, raw_data):
         """
