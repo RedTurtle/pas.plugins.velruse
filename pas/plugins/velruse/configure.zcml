@@ -28,7 +28,7 @@
 
   <genericsetup:registerProfile
         name="default"
-        title="Velruse authentication"
+        title="Velruse authentication plugin"
         directory="profiles/default"
         description="Allows users to log in with many social network through Velruse"
         provides="Products.GenericSetup.interfaces.EXTENSION"

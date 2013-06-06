@@ -8,13 +8,12 @@ from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
-from Products.PluggableAuthService.interfaces.plugins import (
-        IExtractionPlugin,
-        IAuthenticationPlugin,
-        ICredentialsResetPlugin,
-        IPropertiesPlugin,
-        IUserEnumerationPlugin,
-    )
+from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
+from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
+from Products.PluggableAuthService.interfaces.plugins import ICredentialsResetPlugin
+from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
+from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
+from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
 
 from pas.plugins.velruse.interfaces import IVelrusePlugin
 
@@ -49,7 +48,8 @@ class VelruseUsers(BasePlugin):
             IAuthenticationPlugin,
 #            IPropertiesPlugin,
             IUserEnumerationPlugin,
-#            IUserFactoryPlugin
+#            IUserFactoryPlugin,
+            IRolesPlugin,
         )
     
     def __init__(self, id, title=None):
@@ -57,7 +57,22 @@ class VelruseUsers(BasePlugin):
         self.title = title
         self.manage_addProperty('velruse_server_host', '127.0.0.1:5020', 'string')
         self.manage_addProperty('velruse_auth_info_path', '/velruse/auth_info', 'string')
+        self.manage_addProperty('given_roles', ['Member',], 'lines')
         #self._storage = OOBTree()
+
+    def getRolesForPrincipal(self, principal, request=None ):
+
+        """ principal -> ( role_1, ... role_N )
+
+        o Return a sequence of role names which the principal has.
+
+        o May assign roles based on values in the REQUEST object, if present.
+        """
+        acl_users = getToolByName(self, 'acl_users')
+        vproperty = acl_users.velruse_users_properties
+        if vproperty._storage.get(principal.getId()):
+            return tuple(self.getProperty('given_roles'))
+        return ()
 
     def extractCredentials(self, request):
         """ request -> {...}
