@@ -2,7 +2,18 @@
 
 import logging
 
+from AccessControl.Permissions import add_user_folders
+from Products.PluggableAuthService import registerMultiPlugin
+from .plugin import VelruseUsers, AddForm
+
 logger = logging.getLogger('pas.plugins.velruse')
 
+#registerMultiPlugin(VelruseUsers.meta_type)
+
 def initialize(context):
-    """Initializer called when used as a Zope 2 product."""
+    context.registerClass(VelruseUsers,
+                          permission=add_user_folders,
+                          constructors=(AddForm,),
+                          visibility=None,
+                          icon='openid.png'
+                          )
