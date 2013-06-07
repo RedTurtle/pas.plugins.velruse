@@ -5,7 +5,11 @@ from AccessControl import ClassSecurityInfo
 
 from zope.interface import implements
 
+from StringIO import StringIO
+
 import requests
+import posixpath
+import urlparse 
 
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
@@ -22,6 +26,13 @@ from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
 
 from pas.plugins.velruse import config
 from pas.plugins.velruse.interfaces import IVelrusePlugin
+
+
+class TempPortrait(StringIO):
+    
+    def __init__(self, filename, content):
+        self.filename = filename
+        StringIO.__init__(self, content) 
 
 
 class AddForm(BrowserView):
@@ -212,11 +223,24 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         """
         user_data = {}
         userid_data = raw_data.get('profile', {}).get('accounts', [None])[0]
-        username = "%s.%s" % (userid_data.get('domain', None),
-                              userid_data.get('userid', None))
-        user_data['username'] = username.encode('utf-8')
-        user_data['email'] = raw_data.get('profile', {}).get('verifiedEmail', '').encode('utf-8')
-        # BBB: seems that commonly email (up) is stored as string but fullname (down) is stored as unicode
+        username = ("%s.%s" % (userid_data.get('domain', None),
+                              userid_data.get('userid', None))).encode('utf-8')
+        user_data['username'] = username
+        if raw_data.get('profile', {}).get('emails', []):
+            # BBB: seems that commonly email (up) is stored as string
+            user_data['email'] = raw_data.get('profile', {}).get('emails', [])[0]['value'].encode('utf-8')
         user_data['fullname'] = raw_data.get('profile', {}).get('name', {}).get('formatted', '')
+        if raw_data.get('profile', {}).get('addresses', []):
+            user_data['location'] = raw_data.get('profile', {}).get('addresses', [])[0].get('formatted', '')
+        if raw_data.get('profile', {}).get('urls', []):
+            user_data['home_page'] = raw_data.get('profile', {}).get('urls', [])[0].get('value', '')
+        # profile's photo
+        if raw_data.get('profile', {}).get('photos', []):
+            photo_url = raw_data.get('profile', {}).get('photos', [])[0].get('value', '')
+            r = requests.get(photo_url)
+            path = urlparse.urlsplit(photo_url).path
+            filename = posixpath.basename(path)
+            portrait = TempPortrait(filename, r.content)
+            getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)            
         return user_data
 
