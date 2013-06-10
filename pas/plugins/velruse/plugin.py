@@ -229,7 +229,8 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         if raw_data.get('profile', {}).get('emails', []):
             # BBB: seems that commonly email (up) is stored as string
             user_data['email'] = raw_data.get('profile', {}).get('emails', [])[0]['value'].encode('utf-8')
-        user_data['fullname'] = raw_data.get('profile', {}).get('name', {}).get('formatted', '')
+        user_data['fullname'] = raw_data.get('profile', {}).get('name', {}).get('formatted', '') or \
+                    raw_data.get('profile', {}).get('displayName', {})
         if raw_data.get('profile', {}).get('addresses', []):
             user_data['location'] = raw_data.get('profile', {}).get('addresses', [])[0].get('formatted', '')
         if raw_data.get('profile', {}).get('urls', []):
