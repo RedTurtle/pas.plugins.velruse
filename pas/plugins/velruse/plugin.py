@@ -194,8 +194,8 @@ class VelruseUsers(ZODBMutablePropertyProvider):
 #    def setPropertiesForUser(self, user, propertysheet):
 #        """Set properties in the current plugin only if they are not originally read from Velruse"""
 #        properties = dict(propertysheet.propertyItems())
-#        for property_id in [p for p in properties.keys() if p in config.PROPERTIY_PROVIDERS_INFO.keys()]:
-#            for provider in config.PROPERTIY_PROVIDERS_INFO[property_id]:
+#        for property_id in [p for p in properties.keys() if p in config.PROPERTY_PROVIDERS_INFO.keys()]:
+#            for provider in config.PROPERTY_PROVIDERS_INFO[property_id]:
 #                if user.getId().startswith("%s." % provider) and property_id in propertysheet._properties.keys():
 #                    # Do not change this value!
 #                    del propertysheet._properties[property_id]
@@ -212,7 +212,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
     def setPropertiesForUser(self, user, propertysheet):
         """Set properties in the current plugin only if they are not originally read from Velruse"""
         properties = dict(propertysheet.propertyItems())
-        for provider, given_properties in config.PROPERTIY_PROVIDERS_INFO.items():
+        for provider, given_properties in config.PROPERTY_PROVIDERS_INFO.items():
             if user.getId().startswith("%s." % provider):
                 for property_id in [p for p in given_properties if p in properties.keys()]:
                     del propertysheet._properties[property_id]

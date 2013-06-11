@@ -8,7 +8,7 @@
 #        'email': ('facebook.com', ),
 #}
 
-PROPERTIY_PROVIDERS_INFO = {
+PROPERTY_PROVIDERS_INFO = {
     'facebook.com': ('email', 'fullname', ),
     'linkedin.com': ('fullname', ),
     'twitter.com': ('fullname', 'location', 'home_page', ),
