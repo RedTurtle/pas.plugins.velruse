@@ -4,6 +4,7 @@ from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
 
 from zope.interface import implements
+from zope.event import notify
 
 from StringIO import StringIO
 
@@ -26,6 +27,7 @@ from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
 
 from pas.plugins.velruse import config
 from pas.plugins.velruse.interfaces import IVelrusePlugin
+from pas.plugins.velruse.events import VelruseFirstLoginEvent
 
 
 class TempPortrait(StringIO):
@@ -54,7 +56,8 @@ class AddForm(BrowserView):
 
 class VelruseUsers(ZODBMutablePropertyProvider):
     """
-    TODO
+    PAS Plugin for Velruse authentication. It's more or less a basic
+    ZODBMutablePropertyProvider with additional features
     """
     
     # List PAS interfaces we implement here
@@ -130,7 +133,13 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             acl_users = getToolByName(self, 'acl_users')
             username = user_data.get('username').encode('utf-8')
             acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
-            self._storage.insert(user_data.get('username'), user_data)
+            if not self._storage.get(user_data.get('username')):
+                self._storage.insert(user_data.get('username'), user_data)
+                new_user = self.acl_users.getUserById(user_data.get('username'))
+                notify(VelruseFirstLoginEvent(new_user))
+            else:
+                # we store the user info EVERY TIME because data from social network can be changed meanwhile
+                self._storage.insert(user_data.get('username'), user_data)
             return (username, username)
 
     security.declarePrivate('enumerateUsers')
@@ -207,7 +216,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             if user.getId().startswith("%s." % provider):
                 for property_id in [p for p in given_properties if p in properties.keys()]:
                     del propertysheet._properties[property_id]
-                    # now the _schema, that is a readonly attribute :(
+                    # the _schema, that is a readonly attribute :(
                     new_schema = []
                     for pid, pt in propertysheet._schema:
                         if pid==property_id:

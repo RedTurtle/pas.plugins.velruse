@@ -30,6 +30,8 @@ setup(name='pas.plugins.velruse',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'Products.PluggableAuthService',
+          'Products.PlonePAS',
           'requests',
       ],
       entry_points="""
