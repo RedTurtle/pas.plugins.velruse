@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<object name="portal_skins" meta_type="Plone Skins Tool">
+ 
+ <object name="pas.plugins.velruse" meta_type="Filesystem Directory View"
+         directory="pas.plugins.velruse:skins/pas.plugins.velruse"/>
+
+  <skin-path name="*">
+    <layer name="pas.plugins.velruse" insert-after="custom"/>
+  </skin-path>
+
+</object>

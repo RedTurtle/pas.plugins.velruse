@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<object name="portal_properties" meta_type="Plone Properties Tool">
+ <object name="velruse_settings" meta_type="Plone Property Sheet">
+  <property name="title">Velruse Site Settings</property>
+  <!--property name="site_login_enabled" type="boolean">True</property-->
+  <!--property name="activated_plugins" type="lines"></property-->
+ </object>
+</object>

@@ -7,6 +7,20 @@ from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
 from pas.plugins.velruse.plugin import VelruseUsers
 from pas.plugins.velruse import logger
 
+_PROPERTIES = [
+    dict(name='site_login_enabled', type_='boolean', value=True),
+    dict(name='activated_plugins', type_='lines', value=[]),
+]
+
+def registerProperties(portal):
+    ptool = portal.portal_properties
+    props = ptool.velruse_settings
+
+    for prop in _PROPERTIES:
+        if not props.hasProperty(prop['name']):
+            props.manage_addProperty(prop['name'], prop['value'], prop['type_'])
+            logger.info("Added missing %s property" % prop['name'])
+
 def installPASPlugin(portal, name, klass, title):
     
     userFolder = portal['acl_users']
@@ -31,6 +45,7 @@ def installPASPlugin(portal, name, klass, title):
                     plugins._plugins[interface] = tuple(active)
         logger.info('%s plugin created' % title)
 
+
 def importVarious(context):
     """Miscellanous steps import handle
     """
@@ -42,3 +57,4 @@ def importVarious(context):
     
     installPASPlugin(portal, 'velruse_users', VelruseUsers, 'Velruse Authentication Plugin')
     #installPASPlugin(portal, 'velruse_users_properties', ZODBMutablePropertyProvider, 'Velruse Users Properties')
+    registerProperties(portal)
