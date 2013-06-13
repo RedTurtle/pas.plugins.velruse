@@ -11,6 +11,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.PlonePAS.interfaces.plugins import IUserIntrospection
 from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
+from Products.PlonePAS.sheet import MutablePropertySheet
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import ICredentialsResetPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
@@ -224,6 +225,23 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                         new_schema.append( (pid, pt) )
                     propertysheet._schema = tuple(new_schema)
                 super(VelruseUsers, self).setPropertiesForUser(user, propertysheet)
+
+    security.declarePrivate('getPropertiesForUser')
+    def getPropertiesForUser(self, user, request=None):
+        """Get property values for a user or group.
+        Returns a dictionary of values or a PropertySheet.
+
+        This implementation will always return a MutablePropertySheet.
+
+        NOTE: Must always return something, or else the property sheet
+        won't get created and this will screw up portal_memberdata.
+        """
+        for provider, given_properties in config.PROPERTY_PROVIDERS_INFO.items():
+            if user.getId().startswith("%s." % provider):
+                return ZODBMutablePropertyProvider.getPropertiesForUser(self, user, request)
+#        data = {}
+#        return MutablePropertySheet(self.id,
+#                                    schema=self._getSchema(False), **data)
 
     def _format_user_data(self, raw_data):
         """
