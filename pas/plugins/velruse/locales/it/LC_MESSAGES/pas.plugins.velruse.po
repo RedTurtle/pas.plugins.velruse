@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-13 11:46+0000\n"
+"POT-Creation-Date: 2013-06-13 20:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Luca Fabbri <keul@redturtle.it>\n"
 "Language-Team: RedTurtle Technology <sviluppoplone@redturtle.it>\n"
@@ -23,18 +23,22 @@ msgstr "Permette agli utenti di autenticarsi nel sito usando Velruse"
 msgid "Velruse authentication plugin"
 msgstr "Plugin di autenticazione Velruse"
 
+#: ../skins/pas.plugins.velruse/login_form.cpt:100
+msgid "You can perform authentication with one of those services"
+msgstr "Puoi autenticarti usando uno dei seguenti servizi"
+
 #. Default: "Authentication with other services is not available. Contact the site administrator."
-#: ../skins/pas.plugins.velruse/login_form.cpt:122
+#: ../skins/pas.plugins.velruse/login_form.cpt:124
 msgid "no_plugin_activated"
 msgstr "L'autenticazione con altri servizi non è disponibile. Contatta l'amministratore del sito."
 
 #. Default: "Site login"
-#: ../skins/pas.plugins.velruse/login_form.cpt:130
+#: ../skins/pas.plugins.velruse/login_form.cpt:132
 msgid "plone_login"
 msgstr "Login del sito"
 
 #. Default: "Login with..."
 #: ../skins/pas.plugins.velruse/login_form.cpt:93
 msgid "velruse_login"
-msgstr "Autenticati con..."
+msgstr "Login con..."
 

@@ -97,6 +97,8 @@
 
                 <dd id="fieldset-velruse-login" tal:omit-tag="not:velruse_settings/site_login_enabled">
 
+					<h2 i18n:translate="">You can perform authentication with one of those services</h2>
+
                     <div id="velruse-activated-plugins">
                         <ul tal:condition="activated_plugins">
                             <tal:plugin repeat="plugin activated_plugins">
