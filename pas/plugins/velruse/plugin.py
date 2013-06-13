@@ -20,6 +20,7 @@ from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlu
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from StringIO import StringIO
 from pas.plugins.velruse import config
+from pas.plugins.velruse import logger
 from pas.plugins.velruse.events import VelruseFirstLoginEvent
 from pas.plugins.velruse.interfaces import IVelrusePlugin
 from zope.event import notify
@@ -27,6 +28,7 @@ from zope.interface import implements
 
 SEARCH_PATTERN_STR = "^[^ ]+"
 search_pattern = re.compile(SEARCH_PATTERN_STR, re.I)
+
 
 class TempPortrait(StringIO):
     
@@ -70,6 +72,8 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         )
     
     security = ClassSecurityInfo()
+    
+#    _dont_swallow_my_exceptions = True
     
     def __init__(self, id, title=None):
         super(VelruseUsers, self).__init__(id, title)
@@ -129,14 +133,20 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         if user_data.get('username'):
             acl_users = getToolByName(self, 'acl_users')
             username = user_data.get('username').encode('utf-8')
-            acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
             if not self._storage.get(user_data.get('username')):
+                # userdata not existing: this is the first time we enter here
                 self._storage.insert(user_data.get('username'), user_data)
                 new_user = self.acl_users.getUserById(user_data.get('username'))
-                notify(VelruseFirstLoginEvent(new_user))
+                if new_user:
+                    notify(VelruseFirstLoginEvent(new_user))
             else:
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
                 self._storage.insert(user_data.get('username'), user_data)
+                new_user = self.acl_users.getUserById(user_data.get('username'))
+            if not new_user:
+                logger.error("Can't authenticate with username %s" % username)
+                return None
+            #acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
             return (username, username)
 
     security.declarePrivate('enumerateUsers')
@@ -262,26 +272,26 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)            
         return user_data
 
-    security.declarePrivate('getUserIds')
-    def getUserIds(self):
-        """
-        Return a list of user ids
-        """
-        for u in self._storage.items():
-            yield u[0]
-
-    security.declarePrivate('getUserNames')
-    def getUserNames(self):
-        """
-        Return a list of usernames
-        """
-        self.getUserIds()
-
-    security.declarePrivate('getUsers')
-    def getUsers(self):
-        """
-        Return a list of users
-        """
-        acl_users = getToolByName(self, 'acl_users')
-        for u in self._storage.items():
-            return acl_user.getUserById(u[0])
+#    security.declarePrivate('getUserIds')
+#    def getUserIds(self):
+#        """
+#        Return a list of user ids
+#        """
+#        for u in self._storage.items():
+#            yield u[0]
+#
+#    security.declarePrivate('getUserNames')
+#    def getUserNames(self):
+#        """
+#        Return a list of usernames
+#        """
+#        self.getUserIds()
+#
+#    security.declarePrivate('getUsers')
+#    def getUsers(self):
+#        """
+#        Return a list of users
+#        """
+#        acl_users = getToolByName(self, 'acl_users')
+#        for u in self._storage.items():
+#            return acl_user.getUserById(u[0])
