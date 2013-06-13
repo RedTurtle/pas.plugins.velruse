@@ -26,9 +26,7 @@ from pas.plugins.velruse.interfaces import IVelrusePlugin
 from zope.event import notify
 from zope.interface import implements
 
-SEARCH_PATTERN_STR = "^[^ ]+"
-search_pattern = re.compile(SEARCH_PATTERN_STR, re.I)
-
+SEARCH_PATTERN_STR = r"\s*%s"
 
 class TempPortrait(StringIO):
     
@@ -68,12 +66,12 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             IPropertiesPlugin,
             IUserEnumerationPlugin,
             IRolesPlugin,
-#            IUserIntrospection,
+            IUserIntrospection,
         )
     
     security = ClassSecurityInfo()
     
-#    _dont_swallow_my_exceptions = True
+    #_dont_swallow_my_exceptions = True
     
     def __init__(self, id, title=None):
         super(VelruseUsers, self).__init__(id, title)
@@ -135,18 +133,19 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             username = user_data.get('username').encode('utf-8')
             if not self._storage.get(user_data.get('username')):
                 # userdata not existing: this is the first time we enter here
+                acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
                 self._storage.insert(user_data.get('username'), user_data)
                 new_user = self.acl_users.getUserById(user_data.get('username'))
                 if new_user:
                     notify(VelruseFirstLoginEvent(new_user))
             else:
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
+                acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
                 self._storage.insert(user_data.get('username'), user_data)
                 new_user = self.acl_users.getUserById(user_data.get('username'))
             if not new_user:
                 logger.error("Can't authenticate with username %s" % username)
                 return None
-            #acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
             return (username, username)
 
     security.declarePrivate('enumerateUsers')
@@ -191,40 +190,23 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         o Insufficiently-specified criteria may have catastrophic
           scaling issues for some implementations.
         """
+        id = id or login
         if self._storage.get(id):
             return ({'id': id,
                     'login': id,
-                    'plugin_id': self.getId()})
+                    'plugin_id': self.getId()},)
         results = []
-#        if kw and set(kw.keys()) & set(('fullname', 'email',)):
-#            for userid, user_data in self._storage.items():
-#                # BBB potentially very slow
-#                if not user_data.get('fullname') and not user_data.get('email'):
-#                    continue
-#                if search_pattern.search(user_data.get('fullname')) or \
-#                        search_pattern.match(user_data.get('email')):
-#                    results.append({'id': userid,
-#                                    'login': userid,
-#                                    'plugin_id': self.getId()})
-        return results
-
-#    security.declarePrivate('setPropertiesForUser')
-#    def setPropertiesForUser(self, user, propertysheet):
-#        """Set properties in the current plugin only if they are not originally read from Velruse"""
-#        properties = dict(propertysheet.propertyItems())
-#        for property_id in [p for p in properties.keys() if p in config.PROPERTY_PROVIDERS_INFO.keys()]:
-#            for provider in config.PROPERTY_PROVIDERS_INFO[property_id]:
-#                if user.getId().startswith("%s." % provider) and property_id in propertysheet._properties.keys():
-#                    # Do not change this value!
-#                    del propertysheet._properties[property_id]
-#                    # now the _schema, that is a readonly attribute :(
-#                    new_schema = []
-#                    for pid, pt in propertysheet._schema:
-#                        if pid==property_id:
-#                            continue
-#                        new_schema.append( (pid, pt) )
-#                    propertysheet._schema = tuple(new_schema)
-#        super(VelruseUsers, self).setPropertiesForUser(user, propertysheet)
+        if kw and set(kw.keys()) & set(('fullname', 'email',)):
+            for userid, user_data in self._storage.items():
+                # BBB potentially very slow
+                if not user_data.get('fullname') and not user_data.get('email'):
+                    continue
+                if re.search(SEARCH_PATTERN_STR % kw.get('fullname'), user_data.get('fullname'), re.I) or \
+                        re.search(SEARCH_PATTERN_STR % kw.get('email'), user_data.get('email'), re.I):
+                    results.append({'id': userid,
+                                    'login': userid,
+                                    'plugin_id': self.getId()})
+        return tuple(results)
 
     security.declarePrivate('setPropertiesForUser')
     def setPropertiesForUser(self, user, propertysheet):
@@ -272,26 +254,27 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)            
         return user_data
 
-#    security.declarePrivate('getUserIds')
-#    def getUserIds(self):
-#        """
-#        Return a list of user ids
-#        """
-#        for u in self._storage.items():
-#            yield u[0]
-#
-#    security.declarePrivate('getUserNames')
-#    def getUserNames(self):
-#        """
-#        Return a list of usernames
-#        """
-#        self.getUserIds()
-#
-#    security.declarePrivate('getUsers')
-#    def getUsers(self):
-#        """
-#        Return a list of users
-#        """
-#        acl_users = getToolByName(self, 'acl_users')
-#        for u in self._storage.items():
-#            return acl_user.getUserById(u[0])
+    security.declarePrivate('getUserIds')
+    def getUserIds(self):
+        """
+        Return a list of user ids
+        """
+        for u in self._storage.items():
+            yield u[0]
+
+    security.declarePrivate('getUserNames')
+    def getUserNames(self):
+        """
+        Return a list of usernames
+        """
+        for u in self.getUserIds():
+            yield u
+
+    security.declarePrivate('getUsers')
+    def getUsers(self):
+        """
+        Return a list of users
+        """
+        acl_users = getToolByName(self, 'acl_users')
+        for u in self._storage.items():
+            yield acl_user.getUserById(u[0])
