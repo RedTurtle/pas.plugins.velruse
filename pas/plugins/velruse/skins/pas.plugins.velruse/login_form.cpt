@@ -119,8 +119,8 @@
                                 </li>
                             </tal:plugin>
                         </ul>
-                        <p tal:condition="not:activated_plugins">
-                            Authentication with other services is disabled. Contact the site administrator.
+                        <p tal:condition="not:activated_plugins" i18n:translate="no_plugin_activated">
+                            Authentication with other services is not available. Contact the site administrator.
                         </p>
                     </div>
 

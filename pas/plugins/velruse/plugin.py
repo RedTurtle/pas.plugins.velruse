@@ -1,34 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from App.class_init import InitializeClass
-from AccessControl import ClassSecurityInfo
-
-from zope.interface import implements
-from zope.event import notify
-
-from StringIO import StringIO
-
 import requests
 import posixpath
 import urlparse 
+import re
 
-from Products.Five.browser import BrowserView
+from AccessControl import ClassSecurityInfo
+from App.class_init import InitializeClass
 from Products.CMFCore.utils import getToolByName
-
-from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
-from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
+from Products.Five.browser import BrowserView
+from Products.PlonePAS.interfaces.plugins import IUserIntrospection
+from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import ICredentialsResetPlugin
+from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
-from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
-
-from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
-
+from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
+from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
+from StringIO import StringIO
 from pas.plugins.velruse import config
-from pas.plugins.velruse.interfaces import IVelrusePlugin
 from pas.plugins.velruse.events import VelruseFirstLoginEvent
+from pas.plugins.velruse.interfaces import IVelrusePlugin
+from zope.event import notify
+from zope.interface import implements
 
+SEARCH_PATTERN_STR = "^[^ ]+"
+search_pattern = re.compile(SEARCH_PATTERN_STR, re.I)
 
 class TempPortrait(StringIO):
     
@@ -64,12 +62,11 @@ class VelruseUsers(ZODBMutablePropertyProvider):
     implements(
             IVelrusePlugin,
             IExtractionPlugin,
-#            ICredentialsResetPlugin,
             IAuthenticationPlugin,
             IPropertiesPlugin,
             IUserEnumerationPlugin,
-#            IUserFactoryPlugin,
             IRolesPlugin,
+#            IUserIntrospection,
         )
     
     security = ClassSecurityInfo()
@@ -185,10 +182,21 @@ class VelruseUsers(ZODBMutablePropertyProvider):
           scaling issues for some implementations.
         """
         if self._storage.get(id):
-            return [{'id': id,
+            return ({'id': id,
                     'login': id,
-                    'plugin_id': self.getId()}]
-        return ()
+                    'plugin_id': self.getId()})
+        results = []
+#        if kw and set(kw.keys()) & set(('fullname', 'email',)):
+#            for userid, user_data in self._storage.items():
+#                # BBB potentially very slow
+#                if not user_data.get('fullname') and not user_data.get('email'):
+#                    continue
+#                if search_pattern.search(user_data.get('fullname')) or \
+#                        search_pattern.match(user_data.get('email')):
+#                    results.append({'id': userid,
+#                                    'login': userid,
+#                                    'plugin_id': self.getId()})
+        return results
 
 #    security.declarePrivate('setPropertiesForUser')
 #    def setPropertiesForUser(self, user, propertysheet):
@@ -254,3 +262,26 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)            
         return user_data
 
+    security.declarePrivate('getUserIds')
+    def getUserIds(self):
+        """
+        Return a list of user ids
+        """
+        for u in self._storage.items():
+            yield u[0]
+
+    security.declarePrivate('getUserNames')
+    def getUserNames(self):
+        """
+        Return a list of usernames
+        """
+        self.getUserIds()
+
+    security.declarePrivate('getUsers')
+    def getUsers(self):
+        """
+        Return a list of users
+        """
+        acl_users = getToolByName(self, 'acl_users')
+        for u in self._storage.items():
+            return acl_user.getUserById(u[0])
