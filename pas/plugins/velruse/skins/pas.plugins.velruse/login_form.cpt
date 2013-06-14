@@ -11,24 +11,6 @@
                 tal:attributes="src string:${context/portal_url}/login.js">
         </script>
     </metal:js>
-    <metal:css fill-slot="style_slot">
-      <style type="text/css" media="all">
-        .documentContent #velruse-activated-plugins ul {
-            list-style-type: none;
-            list-style-image: none;
-        }
-        #velruse-activated-plugins li a {
-            border: none;
-        }
-        #velruse-activated-plugins li,
-		#velruse-activated-plugins li .pluginInfo {
-            display: inline;
-        }
-        #velruse-activated-plugins ul {
-            text-align:center;
-        }
-      </style>
-    </metal:css>
     <metal:block fill-slot="top_slot"
                  tal:define="dummy python:request.set('disable_border',1);
                              disable_column_one python:request.set('disable_plone.leftcolumn',1);
@@ -108,15 +90,15 @@
                                                 plugin_url python:plugin_data[1];
                                                 plugin_url python: plugin_url.startswith('/') and portal_url + plugin_url or plugin_url;
                                                 plugin_img python:plugin_data[2];
-                                                plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;">
+                                                plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;"
+                                    tal:condition="plugin_title">
                                         <a href="" title="" tal:attributes="title plugin_title;
                                                                             href plugin_url;">
-                                            <img alt="" src="" tal:condition="plugin_img"
-											                   tal:attributes="src plugin_img" />
-                                            <div class="pluginInfo" tal:condition="plugin_title">
+                                            <span class="pluginInfo"
+                                                  tal:attributes="style python:'background-image:url(%s);;background-repeat:no-repeat' %plugin_img">
                                                 <strong tal:content="plugin_title"
                                                         i18:translate="">Twitter</strong>
-                                            </div>
+                                            </span>
                                         </a>
                                 </li>
                             </tal:plugin>

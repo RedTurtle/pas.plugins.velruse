@@ -1,0 +1,16 @@
+.documentContent #velruse-activated-plugins ul {
+    list-style-type: none;
+    list-style-image: none;
+    text-align:center;
+}
+#velruse-activated-plugins li a {
+    border: none;
+}
+#velruse-activated-plugins li {
+    display: inline;
+}
+#velruse-activated-plugins li .pluginInfo {
+    padding-top: 70px;
+    min-width: 64px;
+    display:inline-block;
+}
