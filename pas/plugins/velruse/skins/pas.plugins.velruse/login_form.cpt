@@ -90,14 +90,15 @@
                                                 plugin_url python:plugin_data[1];
                                                 plugin_url python: plugin_url.startswith('/') and portal_url + plugin_url or plugin_url;
                                                 plugin_img python:plugin_data[2];
-                                                plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;"
-                                    tal:condition="plugin_title">
+                                                plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;">
                                         <a href="" title="" tal:attributes="title plugin_title;
                                                                             href plugin_url;">
                                             <span class="pluginInfo"
                                                   tal:attributes="style python:'background-image:url(%s);;background-repeat:no-repeat' %plugin_img">
                                                 <strong tal:content="plugin_title"
-                                                        i18:translate="">Twitter</strong>
+												        tal:condition="plugin_title"
+                                                        i18n:translate="">Twitter</strong>
+												<br tal:condition="not:plugin_title"/>
                                             </span>
                                         </a>
                                 </li>
