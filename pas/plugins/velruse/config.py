@@ -10,7 +10,7 @@
 
 PROPERTY_PROVIDERS_INFO = {
     'facebook.com': ('email', 'fullname', ),
-    'linkedin.com': ('fullname', ),
+    'linkedin.com': ('fullname', 'email', ),
     'twitter.com': ('fullname', 'location', 'home_page', ),
     'accounts.google.com': ('email', 'fullname', ),
     }
