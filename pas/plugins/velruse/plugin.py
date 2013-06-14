@@ -138,6 +138,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                 self._storage.insert(user_data.get('username'), user_data)
                 new_user = self.acl_users.getUserById(user_data.get('username'))
                 if new_user:
+                    self.REQUEST.set('first_user_login', user_data.get('username'))
                     notify(VelruseFirstLoginEvent(new_user))
             else:
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
