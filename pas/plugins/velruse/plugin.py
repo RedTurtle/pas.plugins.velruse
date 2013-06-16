@@ -143,7 +143,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             else:
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
                 acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
-                self._storage.insert(user_data.get('username'), user_data)
+                self._storage[user_data.get('username')] = user_data
                 new_user = self.acl_users.getUserById(user_data.get('username'))
             if not new_user:
                 logger.error("Can't authenticate with username %s" % username)

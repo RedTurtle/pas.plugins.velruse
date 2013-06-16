@@ -44,7 +44,7 @@
         title="Additional Velruse Authentication setup"
         description="PAS plugin installer"
         handler=".setuphandlers.importVarious">
-        <depends name="rolemap"/>
+     <depends name="propertiestool"/>
   </genericsetup:importStep>
 
 </configure>
