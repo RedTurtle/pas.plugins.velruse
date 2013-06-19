@@ -1,0 +1,7 @@
+include *.rst
+
+recursive-include docs *
+recursive-include pas *
+
+global-exclude *.pyc
+global-include *.mo
