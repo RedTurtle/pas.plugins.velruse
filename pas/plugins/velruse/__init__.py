@@ -3,7 +3,7 @@
 import logging
 
 from AccessControl.Permissions import add_user_folders
-from Products.PluggableAuthService import registerMultiPlugin
+#from Products.PluggableAuthService import registerMultiPlugin
 
 logger = logging.getLogger('pas.plugins.velruse')
 

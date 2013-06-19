@@ -6,19 +6,16 @@ import urlparse
 import re
 
 from AccessControl import ClassSecurityInfo
-from App.class_init import InitializeClass
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.PlonePAS.interfaces.plugins import IUserIntrospection
 from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
-from Products.PlonePAS.sheet import MutablePropertySheet
+#from Products.PlonePAS.sheet import MutablePropertySheet
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
-from Products.PluggableAuthService.interfaces.plugins import ICredentialsResetPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
 from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
 from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
-from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from StringIO import StringIO
 from pas.plugins.velruse import config
 from pas.plugins.velruse import logger

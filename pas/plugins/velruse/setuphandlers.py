@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from Products.PlonePAS.Extensions.Install import activatePluginInterfaces
-from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
-from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
 
 from pas.plugins.velruse.plugin import VelruseUsers
 from pas.plugins.velruse import logger
@@ -56,5 +54,4 @@ def importVarious(context):
     portal = context.getSite()
     
     installPASPlugin(portal, 'velruse_users', VelruseUsers, 'Velruse Authentication Plugin')
-    #installPASPlugin(portal, 'velruse_users_properties', ZODBMutablePropertyProvider, 'Velruse Users Properties')
     registerProperties(portal)
