@@ -5,7 +5,7 @@ version = '0.1'
 
 setup(name='pas.plugins.velruse',
       version=version,
-      description="Allows users to log in into Plone with social networks through Velruse",
+      description="PAS plugin for Plone. Allow users to login using social networks through Velruse",
       long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from

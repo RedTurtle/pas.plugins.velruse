@@ -1,9 +1,11 @@
-A **PAS plugin** for Plone that authenticate **users from social networks** thorugh the use of **Velruse**.
+A PAS plugin for Plone that **authenticate users from social networks** thorugh the use of **Velruse**.
+
+.. contents::
 
 Introduction
 ============
 
-This Plone plugin let you to enable the authentication of users to you Plone site using `Velruse`__
+This Plone plugin let you to enable authentication of social networks users in Plone sites, using `Velruse`__.
 
 __ http://velruse.readthedocs.org/
 
@@ -16,6 +18,123 @@ Velruse is a Pyramid application so defined:
     and **easily pluggable** for custom identity providers and authentication schemes.
 
     __ http://www.janrain.com/products/engage
+    
+    -- from Velruse documentation
+
+Why use Velruse instead of RPX service?
+---------------------------------------
+
+Plone ecosystem already have at least one plugin for a general social authentication: `plonesocial.auth.rpx`__. But in some
+environments (for example: public company or whatever use case where the user's privacy follow strict rules) this
+kind of service can't be used.
+
+__ http://comlounge.net/rpx/
+
+Privacy apart, Velruse is open source and easilly pluggable: you can provide authentication providers for new services
+not covered by Janrain.
+
+How to Use
+==========
+
+Installing Velruse
+------------------
+
+Velruse is a `Pyramid`__ application so you must follow the proper `installation instruction`__ the refer to the
+`Velruse setup guide`__.
+
+__ http://www.pylonsproject.org/projects/pyramid/about
+__ http://docs.pylonsproject.org/projects/pyramid/en/1.4-branch/narr/install.html
+__ http://velruse.readthedocs.org/en/latest/usage.html
+
+Velruse can be executed as a separate *Pyramid service* and the Plone plugin needs this configuration.
+It will talk to Velruse using HTTP requests.
+
+**TODO**: recent Zope version can be executed in the WSGI stack. Maybe future version of the plugin would support
+also this alternative way? Who knows.
+
+Installing pas.plugins.velruse
+------------------------------
+
+Just add ``pas.plugins.velruse`` to your buildout configuration and re-run it.
+
+.. code:: ini
+
+    [instance]
+    recipe = plone.recipe.zope2instance
+    
+    ...
+    
+    eggs =
+        ...
+        pas.plugins.velruse
+
+After Plone restart, add "**Velruse authentication plugin**" product to you Plone site.
+
+Configuring pas.plugins.velruse
+-------------------------------
+
+Inside ZMI youl'll find the new ``velruse_settings`` property sheet, unsed the ``portal_properties`` tool.
+
+From there you can configure two options:
+
+``site_login_enabled``
+    If you want to keep enabled the standard Plone site login form or not.
+``activated_plugins``
+    A configuration list of available Velruse backends
+
+The ``activated_plugins`` option above must be configured as a set of triplets. Every triplet use "``|``" character as
+separator, like:: 
+
+    Google|http://foo.org/|/++resource++google-login-icon.png``
+
+Triplet elements must keep that meaning order:
+
+``Service title``
+    (optional) A descriptive name of the remote service. For example: "Facebook".
+``Velruse backend URL``
+    (mandatory) URL to the running Velruse service.
+``Service logo URL``
+    (optional) URL for an icon that can recall the service logo.
+
+    Default CSS implementation is for a 64x64px image. Images are **not provided** by this product.
+
+URLs above can be absolute ("http://auth.yourservice.com/login/facebook") or relative to the portal root URL by
+using a starting slash ("/velruse/login/facebook"). The latter will help you keeping Plone and Velruse behind Apache.
+
+Those information are used to properly configure the new login form.
+
+.. image:: http://blog.redturtle.it/pypi-images/pas.plugins.velruse/pas.plugins.velruse-0.1a1-01.png/image_large
+   :alt: New login form
+   :target: http://blog.redturtle.it/pypi-images/pas.plugins.velruse/pas.plugins.velruse-0.1a1-01.png
+
+**TODO**: move all this stuff to a more user friendly control panel form or Plone registry.
+
+Another configuration you can change is the set of default roles given to you users (default to *Member*).
+To change this you must access the "Properties" tab of the PAS plugin inside ``acl_users`` tool.
+
+Data read by Plone from Velruse
+-------------------------------
+
+Right now only Twitter, Facebook, Linkedin and Google+ are automatically configured:
+
+* from Twitter: fullname, location, personal home page and portrait
+  (no e-mail can be read)
+* from Facebook: fullname, e-mail and portrait
+* from Facebook: fullname, e-mail and portrait
+* from Linkedin: fullname, e-mail and portrait
+  (must properly configure the Linkedin API)
+* from Google: fullname and e-mail
+
+But Velruse support *a lot* of additional providers; if you want to enable more
+(this also for your custom providers added to Velruse) you must teach the plugin what data try to read by changing
+a configuration variable.
+
+.. code:: python
+
+    from pas.plugins.velruse.config import PROPERTY_PROVIDERS_INFO
+    PROPERTY_PROVIDERS_INFO['yourmagicnewprovider'] = ('fullname', 'email', 'description')
+
+**TODO**: this will probably change in future, maybe replaced by a blacklist of property you *don't* want to read.
 
 Credits
 =======
