@@ -45,9 +45,10 @@ class AddForm(BrowserView):
             
             plugin = VelruseUsers(name, title)
             self.context.context[name] = plugin
-            
             self.request.response.redirect(self.context.absolute_url() +
                     '/manage_workspace?manage_tabs_message=Plugin+added.')
+            return
+        return self.index()
 
 
 class VelruseUsers(ZODBMutablePropertyProvider):

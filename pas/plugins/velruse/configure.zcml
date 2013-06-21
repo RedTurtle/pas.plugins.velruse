@@ -13,19 +13,20 @@
 
   <five:registerClass 
         class=".plugin.VelruseUsers" 
-        meta_type="VelruseUsers" 
+        meta_type="Velruse Users" 
         permission="zope2.ViewManagementScreens" 
         addview="add-velruse-users-plugin"
         /> 
-    
+
   <pas:registerMultiPlugin
-        meta_type="VelruseUsers"
+        meta_type="Velruse Users"
       />
 
   <browser:page
         name="add-velruse-users-plugin"
         for="zope.browser.interfaces.IAdding"
         class=".plugin.AddForm"
+		template="addform.pt"
         permission="zope2.ViewManagementScreens"
         />
 
