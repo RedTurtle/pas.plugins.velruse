@@ -73,7 +73,10 @@ After Plone restart, add "**Velruse authentication plugin**" product to you Plon
 Configuring pas.plugins.velruse
 -------------------------------
 
-Inside ZMI youl'll find the new ``velruse_settings`` property sheet, unsed the ``portal_properties`` tool.
+UI settings
+~~~~~~~~~~~
+
+Inside ZMI you'll find the new ``velruse_settings`` property sheet, unsed the ``portal_properties`` tool.
 
 From there you can configure two options:
 
@@ -109,8 +112,29 @@ Those information are used to properly configure the new login form.
 
 **TODO**: move all this stuff to a more user friendly control panel form or Plone registry.
 
-Another configuration you can change is the set of default roles given to you users (default to *Member*).
-To change this you must access the "Properties" tab of the PAS plugin inside ``acl_users`` tool.
+Plugin settings
+~~~~~~~~~~~~~~~
+
+Another configuration section is inside the PAS plugin created in ``acl_users`` tool.
+
+When installing ``pas.plugins.velruse`` it automatically create and activate a default plugin: **velruse_users**.
+
+Accessing it's "*Properties*" tab you can/must customize some options: 
+
+``velruse_server_host`` 
+    The hostname of the Pyramid Velruse service. For example: ``127.0.0.1:8080`` id Velruse run on the same
+    server of Plone.
+``velruse_auth_info_path``
+    The configured Pyramid route for calling **auth_info**. Default is ``/velruse/auth_info``.
+    
+    Keep in mind this warning in the Velruse documentation:
+    
+        The ``/auth_info`` URL should be considered sensitive and only trusted services should be allowed access.
+        If an attacker intercepts a an authentication token, they could potentially query /auth_info and learn all of the credentials for the user.
+    
+``given_roles``
+    Set of default roles automatically given to users that perform authentication with the Velruse plugin.
+    Default to "Members" only.
 
 Data read by Plone from Velruse
 -------------------------------
