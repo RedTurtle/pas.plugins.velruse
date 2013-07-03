@@ -160,6 +160,11 @@ a configuration variable.
 
 **TODO**: this will probably change in future, maybe replaced by a blacklist of property you *don't* want to read.
 
+Requirements
+============
+
+Tested with Plone 4.2 and 4.3, using Velruse 1.1.
+
 Credits
 =======
 

@@ -6,17 +6,19 @@ import urlparse
 import re
 
 from AccessControl import ClassSecurityInfo
+from OFS.Image import Image
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.PlonePAS.interfaces.plugins import IUserIntrospection
 from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
-#from Products.PlonePAS.sheet import MutablePropertySheet
+from Products.PlonePAS.utils import scale_image
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
 from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
 from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
 from StringIO import StringIO
+from ZODB.POSException import ConflictError
 from pas.plugins.velruse import config
 from pas.plugins.velruse import logger
 from pas.plugins.velruse.events import VelruseFirstLoginEvent
@@ -125,6 +127,9 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         r = requests.get('http://%s%s' % (velruse_host, velruse_auth_info),
                          params={'format': 'json',
                                  'token': credentials.get('velruse-token')})
+        if r.status_code>=300:
+            logger.error("Can't connect to Velruse backend. Code %s" % r.status_code)
+            return None
         raw_user_data = r.json()
         user_data = self._format_user_data(raw_user_data)
         if user_data.get('username'):
@@ -268,8 +273,28 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             path = urlparse.urlsplit(photo_url).path
             filename = posixpath.basename(path)
             portrait = TempPortrait(filename, r.content)
-            getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)            
+            # getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)
+            try:
+                self._changePortraitFor(portrait, username)
+            except ConflictError:
+                raise
+            except Exception as inst:
+                logger.error("Can't change portrait for %s: %s" % (username, str(inst)))
         return user_data
+
+    security.declarePrivate('_changePortrait')
+    def _changePortraitFor(self, portrait, username):
+        """
+        Like getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username),
+        that is not working anymore after the PloneHotfix20130618
+        """
+        portal_membership = getToolByName(self, 'portal_membership')
+        safe_id = portal_membership._getSafeMemberId(username)
+        if portrait and portrait.filename:
+            scaled, mimetype = scale_image(portrait)
+            portrait = Image(id=safe_id, file=scaled, title='')
+            membertool = getToolByName(self, 'portal_memberdata')
+            membertool._setPortrait(portrait, safe_id)
 
     security.declarePrivate('getUserIds')
     def getUserIds(self):
