@@ -124,10 +124,15 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             return
         velruse_host = self.getProperty('velruse_server_host')
         velruse_auth_info = self.getProperty('velruse_auth_info_path')
-        r = requests.get('http://%s%s' % (velruse_host, velruse_auth_info),
+        try:
+            r = requests.get('http://%s%s' % (velruse_host, velruse_auth_info),
                          params={'format': 'json',
-                                 'token': credentials.get('velruse-token')})
-        if r.status_code>=300:
+                                 'token': credentials.get('velruse-token')},
+                         timeout=self.getConnectionTimeout())
+        except requests.exceptions.Timeout:
+            logger.error("Can't connect to Velruse backend. Timeout.")
+            return None
+        if r.status_code >= 300:
             logger.error("Can't connect to Velruse backend. Code %s" % r.status_code)
             return None
         raw_user_data = r.json()
@@ -152,6 +157,19 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                 logger.error("Can't authenticate with username %s" % username)
                 return None
             return (username, username)
+        else:
+            logger.error("Invalid token %s > %r" % (credentials.get('velruse-token'), raw_user_data))
+
+    def getConnectionTimeout(self):
+        """
+        o Return a connection timeout for velruse call.
+        o Timeout is set in velruse_settings.
+        """
+        portal_properties = getToolByName(self, 'portal_properties')
+        velruse_settings = getattr(portal_properties, 'velruse_settings')
+        if velruse_settings:
+            return getattr(velruse_settings, 'connection_timeout', 10)
+        return 10
 
     security.declarePrivate('enumerateUsers')
     def enumerateUsers(self, id=None, login=None, exact_match=False, sort_by=None, max_results=None, **kw):

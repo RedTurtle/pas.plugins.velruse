@@ -83,7 +83,10 @@ From there you can configure two options:
 ``site_login_enabled``
     If you want to keep enabled the standard Plone site login form or not.
 ``activated_plugins``
-    A configuration list of available Velruse backends
+    A configuration list of available Velruse backends.
+``connection_timeout``
+    A timeout value for connection to velruse server.
+
 
 The ``activated_plugins`` option above must be configured as a set of triplets. Every triplet use "``|``" character as
 separator, like:: 

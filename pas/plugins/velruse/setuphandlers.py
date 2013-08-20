@@ -8,7 +8,9 @@ from pas.plugins.velruse import logger
 _PROPERTIES = [
     dict(name='site_login_enabled', type_='boolean', value=True),
     dict(name='activated_plugins', type_='lines', value=[]),
+    dict(name='connection_timeout', type_='int', value=10),
 ]
+
 
 def registerProperties(portal):
     ptool = portal.portal_properties
@@ -19,10 +21,11 @@ def registerProperties(portal):
             props.manage_addProperty(prop['name'], prop['value'], prop['type_'])
             logger.info("Added missing %s property" % prop['name'])
 
+
 def installPASPlugin(portal, name, klass, title):
-    
+
     userFolder = portal['acl_users']
-    
+
     if name not in userFolder:
         
         plugin = klass(name, title)
