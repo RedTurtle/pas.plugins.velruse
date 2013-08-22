@@ -91,16 +91,17 @@ From there you can configure two options:
 The ``activated_plugins`` option above must be configured as a set of triplets. Every triplet use "``|``" character as
 separator, like:: 
 
-    Google|http://foo.org/|/++resource++google-login-icon.png``
+    Google|http://127.0.0.1:5020/velruse/login/google|/++resource++google-login-icon.png
 
 Triplet elements must keep that meaning order:
 
 ``Service title``
     (optional) A descriptive name of the remote service. For example: "Facebook".
 ``Velruse backend URL``
-    (mandatory) URL to the running Velruse service.
+    (mandatory) URL or path to the running Velruse service. Please note: this must be a public URL the user must
+    able to access.
 ``Service logo URL``
-    (optional) URL for an icon that can recall the service logo.
+    (optional) URL or path for an icon that can recall the service logo.
 
     Default CSS implementation is for a 64x64px image. Images are **not provided** by this product.
 
