@@ -84,7 +84,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         #self._storage = OOBTree()
 
     security.declarePrivate('getRolesForPrincipal')
-    def getRolesForPrincipal(self, principal, request=None ):
+    def getRolesForPrincipal(self, principal, request=None):
 
         """ principal -> ( role_1, ... role_N )
 
@@ -149,9 +149,12 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                     self.REQUEST.set('first_user_login', user_data.get('username'))
                     notify(VelruseFirstLoginEvent(new_user))
             else:
-                # we store the user info EVERY TIME because data from social network can be changed meanwhile
                 acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
-                self._storage[user_data.get('username')] = user_data
+                # we store the user info EVERY TIME because data from social network can be changed meanwhile
+                # but we need to take care of not overriding other Plone-only user's information
+                existing_user_data = self._storage[user_data.get('username')]
+                existing_user_data.update(user_data)
+                self._storage[user_data.get('username')] = existing_user_data
                 new_user = self.acl_users.getUserById(user_data.get('username'))
             if not new_user:
                 logger.error("Can't authenticate with username %s" % username)

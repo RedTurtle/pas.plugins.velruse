@@ -130,10 +130,11 @@ Accessing it's "*Properties*" tab you can/must customize some options:
 ``velruse_auth_info_path``
     The configured Pyramid route for calling **auth_info**. Default is ``/velruse/auth_info``.
     
-    Keep in mind this warning in the Velruse documentation:
+    Keep in mind this warning taken from official Velruse documentation:
     
         The ``/auth_info`` URL should be considered sensitive and only trusted services should be allowed access.
-        If an attacker intercepts a an authentication token, they could potentially query /auth_info and learn all of the credentials for the user.
+        If an attacker intercepts a an authentication token, they could potentially query /auth_info and learn all of
+        the credentials for the user.
     
 ``given_roles``
     Set of default roles automatically given to users that perform authentication with the Velruse plugin.
@@ -153,8 +154,8 @@ Right now only Twitter, Facebook, Linkedin and Google+ are automatically configu
 * from Google: fullname and e-mail
 
 But Velruse support *a lot* of additional providers; if you want to enable more
-(this also for your custom providers added to Velruse) you must teach the plugin what data try to read by changing
-a configuration variable.
+(this is true also for custom providers) you must configure the plugin, setting what data try to read
+by changing a configuration variable.
 
 .. code:: python
 

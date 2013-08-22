@@ -4,8 +4,8 @@
 # BBB: in future a black list will be probably better
 
 PROPERTY_PROVIDERS_INFO = {
-    'facebook.com': ('email', 'fullname', ),
+    'facebook.com': ('fullname', 'email', ),
     'linkedin.com': ('fullname', 'email', ),
     'twitter.com': ('fullname', 'location', 'home_page', ),
-    'accounts.google.com': ('email', 'fullname', ),
+    'accounts.google.com': ('fullname', 'email', ),
     }
