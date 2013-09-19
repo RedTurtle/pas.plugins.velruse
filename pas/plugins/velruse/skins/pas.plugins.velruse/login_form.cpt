@@ -23,6 +23,7 @@
     <div>
         <metal:login define-macro="login"
             tal:define="auth nocall:context/acl_users/credentials_cookie_auth|context/cookie_authentication|nothing;
+                        portal context/@@plone_portal_state/portal;
                         isURLInPortal nocall:context/portal_url/isURLInPortal;
                         login_template_ids python:'login login_success login_password login_failed login_form logged_in logout logged_out registered mail_password mail_password_form register require_login member_search_results pwreset_finish localhost'.split();
                         came_from request/came_from|request/HTTP_REFERER|nothing;
@@ -79,7 +80,7 @@
 
                 <dd id="fieldset-velruse-login" tal:omit-tag="not:velruse_settings/site_login_enabled">
 
-					<h2 i18n:translate="">You can perform authentication with one of those services</h2>
+                    <h2 i18n:translate="">You can perform authentication with one of those services</h2>
 
                     <div id="velruse-activated-plugins">
                         <ul tal:condition="activated_plugins">
@@ -91,14 +92,18 @@
                                                 plugin_url python: plugin_url.startswith('/') and portal_url + plugin_url or plugin_url;
                                                 plugin_img python:plugin_data[2];
                                                 plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;">
-                                        <a href="" title="" tal:attributes="title plugin_title;
-                                                                            href plugin_url;">
+                                        <a href="" title=""
+                                           tal:define="came_from_query python:came_from and '?'+ztu.make_query({'came_from': came_from}) or '';
+                                                       not_portal_url python:context.absolute_url()!=portal.absolute_url() and '?'+ztu.make_query({'came_from': context.absolute_url()}) or '';
+                                                       came_from_query python: came_from_query or not_portal_url;"
+                                           tal:attributes="title plugin_title;
+                                                           href string:${plugin_url}${came_from_query};">
                                             <span class="pluginInfo"
                                                   tal:attributes="style python:'background-image:url(%s);;background-repeat:no-repeat' %plugin_img">
                                                 <strong tal:content="plugin_title"
-												        tal:condition="plugin_title"
+                                                        tal:condition="plugin_title"
                                                         i18n:translate="">Twitter</strong>
-												<br tal:condition="not:plugin_title"/>
+                                                <br tal:condition="not:plugin_title"/>
                                             </span>
                                         </a>
                                 </li>
