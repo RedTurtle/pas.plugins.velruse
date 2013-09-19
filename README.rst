@@ -149,7 +149,6 @@ Right now only Twitter, Facebook, Linkedin and Google+ are automatically configu
 * from Twitter: fullname, location, personal home page and portrait
   (no e-mail can be read)
 * from Facebook: fullname, e-mail and portrait
-* from Facebook: fullname, e-mail and portrait
 * from Linkedin: fullname, e-mail and portrait
   (must properly configure the Linkedin API)
 * from Google: fullname and e-mail
