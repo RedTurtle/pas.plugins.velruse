@@ -13,6 +13,13 @@
     </metal:js>
     <metal:block fill-slot="top_slot"
                  tal:define="dummy python:request.set('disable_border',1);
+				             portal context/@@plone_portal_state/portal;
+                             isURLInPortal nocall:context/portal_url/isURLInPortal;
+                             login_template_ids python:'login login_success login_password login_failed login_form logged_in logout logged_out registered mail_password mail_password_form register require_login member_search_results pwreset_finish localhost'.split();
+                             came_from request/came_from|request/HTTP_REFERER|nothing;
+                             came_from_template_id python:came_from and context.plone_utils.urlparse(came_from)[2].split('/')[-1];
+                             came_from python:test(came_from is not None and isURLInPortal(came_from) and came_from_template_id not in login_template_ids, came_from, None);
+						     dummy python:came_from and request.RESPONSE.setCookie('came_from', came_from, path=portal.absolute_url_path());
                              disable_column_one python:request.set('disable_plone.leftcolumn',1);
                              disable_column_two python:request.set('disable_plone.rightcolumn',1);" />
 </head>
