@@ -340,4 +340,4 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         """
         acl_users = getToolByName(self, 'acl_users')
         for u in self._storage.items():
-            yield acl_user.getUserById(u[0])
+            yield acl_users.getUserById(u[0])
