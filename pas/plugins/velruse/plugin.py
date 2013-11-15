@@ -11,7 +11,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.PlonePAS.interfaces.plugins import IUserIntrospection
 from Products.PlonePAS.plugins.property import ZODBMutablePropertyProvider
-from Products.PlonePAS.utils import scale_image
+from Products.PlonePAS.sheet import MutablePropertySheet
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
@@ -51,6 +51,21 @@ class AddForm(BrowserView):
                     '/manage_workspace?manage_tabs_message=Plugin+added.')
             return
         return self.index()
+
+
+class VelruseMutablePropertySheet(MutablePropertySheet):
+    """An IMutablePropertySheet implementation but check writeable field taken from Velruse"""
+    
+    def canWriteProperty(self, object, id):
+        """
+        Check if a property can be modified.
+        
+        Properties take from Velruse can't be changed
+        """
+        for provider, given_properties in config.PROPERTY_PROVIDERS_INFO.items():
+            if object.getId().startswith("%s." % provider) and id in given_properties:
+                return False
+        return True
 
 
 class VelruseUsers(ZODBMutablePropertyProvider):
@@ -137,29 +152,30 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             return None
         raw_user_data = r.json()
         user_data = self._format_user_data(raw_user_data)
-        if user_data.get('username'):
+        if user_data.get('userid'):
             acl_users = getToolByName(self, 'acl_users')
+            userid = user_data.get('userid').encode('utf-8')
             username = user_data.get('username').encode('utf-8')
-            if not self._storage.get(user_data.get('username')):
+            if not self._storage.get(userid):
                 # userdata not existing: this is the first time we enter here
                 acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
                 self._storage.insert(user_data.get('username'), user_data)
                 new_user = self.acl_users.getUserById(user_data.get('username'))
                 if new_user:
-                    self.REQUEST.set('first_user_login', user_data.get('username'))
+                    self.REQUEST.set('first_user_login', userid)
                     notify(VelruseFirstLoginEvent(new_user))
             else:
                 acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
                 # but we need to take care of not overriding other Plone-only user's information
-                existing_user_data = self._storage[user_data.get('username')]
+                existing_user_data = self._storage[userid]
                 existing_user_data.update(user_data)
-                self._storage[user_data.get('username')] = existing_user_data
-                new_user = self.acl_users.getUserById(user_data.get('username'))
+                self._storage[userid] = existing_user_data
+                new_user = self.acl_users.getUserById(userid)
             if not new_user:
-                logger.error("Can't authenticate with username %s" % username)
+                logger.error("Can't authenticate with userid %s (%s)" % (userid, username))
                 return None
-            return (username, username)
+            return (userid, username)
         else:
             logger.error("Invalid token %s > %r" % (credentials.get('velruse-token'), raw_user_data))
 
@@ -263,10 +279,22 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         """
         for provider, given_properties in config.PROPERTY_PROVIDERS_INFO.items():
             if user.getId().startswith("%s." % provider):
-                return ZODBMutablePropertyProvider.getPropertiesForUser(self, user, request)
-#        data = {}
-#        return MutablePropertySheet(self.id,
-#                                    schema=self._getSchema(False), **data)
+                # Code taken from base getPropertiesForUser method
+                isGroup = getattr(user, 'isGroup', lambda: None)()
+        
+                data = self._storage.get(user.getId())
+                defaults = self._getDefaultValues(isGroup)
+        
+                # provide default values where missing
+                if not data:
+                    data = {}
+                for key, val in defaults.items():
+                    if not key in data:
+                        data[key] = val
+        
+                return VelruseMutablePropertySheet(self.id,
+                                                   schema=self._getSchema(isGroup), **data)
+
 
     def _format_user_data(self, raw_data):
         """
@@ -275,12 +303,15 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         """
         user_data = {}
         userid_data = raw_data.get('profile', {}).get('accounts', [None])[0]
-        userid = ("%s.%s" % (userid_data.get('domain', None),
+        userid = ("%s.%s" % (userid_data.get('domain', ''),
                              userid_data.get('userid', None))).encode('utf-8')
         user_data['userid'] = userid
         username = userid_data.get('username', None)
         if not username:
             username = userid
+        else:
+            username = ("%s.%s" % (userid_data.get('domain', ''),
+                                   username)).encode('utf-8')
         user_data['username'] = username
         if raw_data.get('profile', {}).get('emails', []):
             # BBB: seems that commonly email (up) is stored as string
@@ -300,7 +331,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             portrait = TempPortrait(filename, r.content)
             # getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)
             try:
-                self._changePortraitFor(portrait, username)
+                self._changePortraitFor(portrait, userid)
             except ConflictError:
                 raise
             except Exception as inst:
