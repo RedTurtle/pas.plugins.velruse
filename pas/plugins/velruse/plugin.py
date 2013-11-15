@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import requests
+# Remove as soon as possible
+try:
+    import requests
+    from requests.exceptions import Timeout
+except ImportError:
+    from pas.plugins.velruse import fallback_requests as requests
+    from pas.plugins.velruse.fallback_requests import Timeout
+
+try:
+    from Products.PlonePAS.utils import scale_image
+except ImportError:
+    from Products.CMFPlone.utils import scale_image
+
 import posixpath
-import urlparse 
+import urlparse
 import re
+import sys
 
 from AccessControl import ClassSecurityInfo
 from OFS.Image import Image
@@ -25,6 +38,11 @@ from pas.plugins.velruse.events import VelruseFirstLoginEvent
 from pas.plugins.velruse.interfaces import IVelrusePlugin
 from zope.event import notify
 from zope.interface import implements
+
+if sys.version_info < (2, 6):
+    PLONE4 = False
+else:
+    PLONE4 = True 
 
 SEARCH_PATTERN_STR = r"\s*%s"
 
@@ -144,7 +162,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                          params={'format': 'json',
                                  'token': credentials.get('velruse-token')},
                          timeout=self.getConnectionTimeout())
-        except requests.exceptions.Timeout:
+        except Timeout:
             logger.error("Can't connect to Velruse backend. Timeout.")
             return None
         if r.status_code >= 300:
@@ -158,14 +176,20 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             username = user_data.get('username').encode('utf-8')
             if not self._storage.get(userid):
                 # userdata not existing: this is the first time we enter here
-                acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
-                self._storage.insert(user_data.get('username'), user_data)
-                new_user = self.acl_users.getUserById(user_data.get('username'))
+                if PLONE4:
+                    acl_users.session._setupSession(userid, self.REQUEST.RESPONSE)
+                else:
+                    acl_users.session.setupSession(userid, self.REQUEST.RESPONSE)
+                self._storage.insert(userid, user_data)
+                new_user = self.acl_users.getUserById(userid)
                 if new_user:
                     self.REQUEST.set('first_user_login', userid)
                     notify(VelruseFirstLoginEvent(new_user))
             else:
-                acl_users.session._setupSession(username, self.REQUEST.RESPONSE)
+                if PLONE4:
+                    acl_users.session._setupSession(userid, self.REQUEST.RESPONSE)
+                else:
+                    acl_users.session.setupSession(userid, self.REQUEST.RESPONSE)
                 # we store the user info EVERY TIME because data from social network can be changed meanwhile
                 # but we need to take care of not overriding other Plone-only user's information
                 existing_user_data = self._storage[userid]
@@ -326,7 +350,8 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         if raw_data.get('profile', {}).get('photos', []):
             photo_url = raw_data.get('profile', {}).get('photos', [])[0].get('value', '')
             r = requests.get(photo_url)
-            path = urlparse.urlsplit(photo_url).path
+            #path = urlparse.urlsplit(photo_url).path # only with Python 2.5+
+            path = urlparse.urlsplit(photo_url)[2]
             filename = posixpath.basename(path)
             portrait = TempPortrait(filename, r.content)
             # getToolByName(self, 'portal_membership').changeMemberPortrait(portrait, username)
@@ -334,7 +359,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                 self._changePortraitFor(portrait, userid)
             except ConflictError:
                 raise
-            except Exception as inst:
+            except Exception, inst:
                 logger.error("Can't change portrait for %s: %s" % (username, str(inst)))
         return user_data
 
@@ -376,3 +401,4 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         acl_users = getToolByName(self, 'acl_users')
         for u in self._storage.items():
             yield acl_users.getUserById(u[0])
+

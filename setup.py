@@ -1,7 +1,19 @@
 from setuptools import setup, find_packages
-import os
+import os, sys
 
-version = '0.1.dev5'
+version = '0.1.dev6'
+
+install_requires = [
+    'setuptools',
+    'Products.PluggableAuthService',
+    'Products.PlonePAS',
+]
+
+# Python 2.4 can't run requests... f**ck
+if sys.version_info >= (2, 6):
+    install_requires.append('requests')
+else:
+    install_requires.append('simplejson')
 
 setup(name='pas.plugins.velruse',
       version=version,
@@ -13,6 +25,7 @@ setup(name='pas.plugins.velruse',
       classifiers=[
         "Development Status :: 3 - Alpha",
         "Framework :: Plone",
+        "Framework :: Plone :: 3.3",
         "Framework :: Plone :: 4.0",
         "Framework :: Plone :: 4.1",
         "Framework :: Plone :: 4.2",
@@ -30,12 +43,7 @@ setup(name='pas.plugins.velruse',
       namespace_packages=['pas', 'pas.plugins'],
       include_package_data=True,
       zip_safe=False,
-      install_requires=[
-          'setuptools',
-          'Products.PluggableAuthService',
-          'Products.PlonePAS',
-          'requests',
-      ],
+      install_requires=install_requires,
       entry_points="""
       # -*- Entry points: -*-
       [z3c.autoinclude.plugin]

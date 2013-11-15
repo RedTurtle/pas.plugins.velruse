@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:pas="http://namespaces.zope.org/pluggableauthservice"
@@ -22,9 +23,16 @@
         meta_type="Velruse Users"
       />
 
-  <browser:page
+  <browser:page zcml:condition="have plone-4"
         name="add-velruse-users-plugin"
         for="zope.browser.interfaces.IAdding"
+        class=".plugin.AddForm"
+		template="addform.pt"
+        permission="zope2.ViewManagementScreens"
+        />
+  <browser:page zcml:condition="not-have plone-4"
+        name="add-velruse-users-plugin"
+        for="zope.app.container.interfaces.IAdding"
         class=".plugin.AddForm"
 		template="addform.pt"
         permission="zope2.ViewManagementScreens"

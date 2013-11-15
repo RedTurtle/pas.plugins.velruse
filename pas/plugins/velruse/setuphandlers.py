@@ -2,7 +2,7 @@
 
 from Products.PlonePAS.Extensions.Install import activatePluginInterfaces
 
-from pas.plugins.velruse.plugin import VelruseUsers
+from pas.plugins.velruse.plugin import VelruseUsers, PLONE4
 from pas.plugins.velruse import logger
 
 _PROPERTIES = [
@@ -10,7 +10,6 @@ _PROPERTIES = [
     dict(name='activated_plugins', type_='lines', value=[]),
     dict(name='connection_timeout', type_='int', value=10),
 ]
-
 
 def registerProperties(portal):
     ptool = portal.portal_properties
@@ -32,7 +31,11 @@ def installPASPlugin(portal, name, klass, title):
         userFolder[name] = plugin
         
         # Activate all interfaces
-        activatePluginInterfaces(portal, name)
+        if PLONE4:
+            activatePluginInterfaces(portal, name)
+        else:
+            from StringIO import StringIO
+            activatePluginInterfaces(portal, name, StringIO())
         
         # Move plugin to the top of the list for each active interface
         plugins = userFolder['plugins']
