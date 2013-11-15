@@ -275,8 +275,12 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         """
         user_data = {}
         userid_data = raw_data.get('profile', {}).get('accounts', [None])[0]
-        username = ("%s.%s" % (userid_data.get('domain', None),
-                              userid_data.get('userid', None))).encode('utf-8')
+        userid = ("%s.%s" % (userid_data.get('domain', None),
+                             userid_data.get('userid', None))).encode('utf-8')
+        user_data['userid'] = userid
+        username = userid_data.get('username', None)
+        if not username:
+            username = userid
         user_data['username'] = username
         if raw_data.get('profile', {}).get('emails', []):
             # BBB: seems that commonly email (up) is stored as string
