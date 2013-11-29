@@ -167,7 +167,13 @@ by changing a configuration variable.
 Requirements
 ============
 
-Tested with Plone 4.2 and 4.3, using Velruse 1.1.
+Tested with:
+
+* Plone 3.3
+* Plone 4.2
+* Plone 4.3
+
+All using Velruse 1.1.
 
 Credits
 =======
