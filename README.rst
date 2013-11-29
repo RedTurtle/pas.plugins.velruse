@@ -102,8 +102,8 @@ Triplet elements must keep that meaning order:
     able to access.
 ``Service logo URL``
     (optional) URL or path for an icon that can recall the service logo.
-
-    Default CSS implementation is for a 64x64px image. Images are **not provided** by this product.
+    
+    Default CSS implementation is for be used with a 64x64px image
 
 URLs above can be absolute ("http://auth.yourservice.com/login/facebook") or relative to the portal root URL by
 using a starting slash ("/velruse/login/facebook"). The latter will help you keeping Plone and Velruse behind Apache.

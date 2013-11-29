@@ -12,6 +12,8 @@
   <five:registerPackage package="." initialize=".initialize" />
   <i18n:registerTranslations directory="locales" />
 
+  <include package=".browser" />
+
   <five:registerClass 
         class=".plugin.VelruseUsers" 
         meta_type="Velruse Users" 

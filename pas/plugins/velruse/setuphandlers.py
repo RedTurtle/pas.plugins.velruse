@@ -4,10 +4,16 @@ from Products.PlonePAS.Extensions.Install import activatePluginInterfaces
 
 from pas.plugins.velruse.plugin import VelruseUsers, PLONE4
 from pas.plugins.velruse import logger
+from pas.plugins.velruse import config
 
 _PROPERTIES = [
     dict(name='site_login_enabled', type_='boolean', value=True),
-    dict(name='activated_plugins', type_='lines', value=[]),
+    dict(name='activated_plugins', type_='lines', value=[
+        "Twitter||/++resource++pas.plugins.velruse.images/twitter-login-icon.png",
+        "Google||/++resource++pas.plugins.velruse.images/google-login-icon.png",
+        "Facebook||/++resource++pas.plugins.velruse.images/facebook-login-icon.png",
+        "Linkedin||/++resource++pas.plugins.velruse.images/linkedin-login-icon.png",
+    ]),
     dict(name='connection_timeout', type_='int', value=10),
 ]
 
@@ -59,5 +65,5 @@ def importVarious(context):
     
     portal = context.getSite()
     
-    installPASPlugin(portal, 'velruse_users', VelruseUsers, 'Velruse Authentication Plugin')
+    installPASPlugin(portal, config.PLUGIN_ID, VelruseUsers, 'Velruse Authentication Plugin')
     registerProperties(portal)

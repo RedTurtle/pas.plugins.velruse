@@ -64,7 +64,9 @@
                         ztu modules/ZTUtils;
                         portal_url context/portal_url;
                         velruse_settings context/portal_properties/velruse_settings;
-                        activated_plugins velruse_settings/activated_plugins;">
+                        activated_plugins velruse_settings/activated_plugins;
+						have_plugins_enabled python:[l for l in activated_plugins if l.split('|')[1]];
+						">
 
             <dl class="portalMessage error"
                 id="enable_cookies_message"
@@ -90,9 +92,10 @@
                     <h2 i18n:translate="">You can perform authentication with one of those services</h2>
 
                     <div id="velruse-activated-plugins">
-                        <ul tal:condition="activated_plugins">
+                        <ul tal:condition="have_plugins_enabled">
                             <tal:plugin repeat="plugin activated_plugins">
                                 <li class="velrusePlugin"
+								    tal:condition="plugin_url"
                                     tal:define="plugin_data python:plugin.split('|');
                                                 plugin_title python:plugin_data[0];
                                                 plugin_url python:plugin_data[1];
@@ -116,7 +119,7 @@
                                 </li>
                             </tal:plugin>
                         </ul>
-                        <p tal:condition="not:activated_plugins" i18n:translate="no_plugin_activated">
+                        <p tal:condition="not:have_plugins_enabled" i18n:translate="no_plugin_activated">
                             Authentication with other services is not available. Contact the site administrator.
                         </p>
                     </div>
