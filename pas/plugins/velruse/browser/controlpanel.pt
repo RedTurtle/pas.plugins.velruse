@@ -10,10 +10,25 @@
 
 <div metal:fill-slot="prefs_configlet_main">
 
+<script type="text/javascript">
+<!--
+
+(function($){
+
+	$(document).ready(function() {
+	
+
+	});
+
+})(jQuery);
+
+//-->
+</script>
+
     <a href=""
        id="setup-link"
        tal:attributes="href string:$portal_url/plone_control_panel"
-	   i18n:domain="plone"
+       i18n:domain="plone"
        i18n:translate="">
         Site Setup
     </a>
@@ -23,13 +38,42 @@
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
     </div>
-    
+
     <div id="content-core">
-        <div id="layout-contents">
-            <span tal:replace="structure view/contents" />
-        </div>
+        
+        <ul class="formTabs">
+            <li class="formTab firstFormTab">
+                <a id="fieldsetlegend-default" href="#fieldsetlegend-default">
+                    <span>Default</span>
+                </a>
+            </li>
+            <li class="formTab lastFormTab">
+                <a id="fieldsetlegend-culo" href="#fieldsetlegend-culo">
+                    <span>Culo</span>
+                </a>
+            </li>
+        </ul>
+        <div class="visualClear"><!-- --></div>
+        
+        <dl class="enableFormTabbing">
+        <dd id="fieldset-default" class="formPanel">
+            <div id="layout-contents">
+                <span tal:replace="structure view/contents" />
+            </div>
+        </dd>
+        <dd id="fieldset-culo" class="formPanel xxxhidden">        
+            <ul tal:define="plugins view/velruse_plugins"
+			    tal:condition="plugins">
+            	<li tal:repeat="plugin plugins">
+            		<a href=""
+					   tal:attributes="href string:${plugin/absolute_url}/@@manage-velruse-plugin"
+					   tal:content="plugin/title">Tuitter</a>
+				</li>
+			</ul>
+        </dd>
+        </dl>
     </div>
-    
+
 </div>
 </body>
 </html>

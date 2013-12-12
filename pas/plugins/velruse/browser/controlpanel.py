@@ -12,7 +12,8 @@ from z3c.form import group
 from z3c.form import form, field
 from pas.plugins.velruse import _
 from pas.plugins.velruse.interfaces import IVelruseGeneralSettings
-
+from pas.plugins.velruse.interfaces import IVelrusePlugin
+from Products.CMFCore.utils import getToolByName
 
 class VelruseSettingsForm(controlpanel.RegistryEditForm):
 
@@ -56,4 +57,8 @@ class VelruseSettingsForm(controlpanel.RegistryEditForm):
 class VelruseSettingsFormView(controlpanel.ControlPanelFormWrapper):
     form = VelruseSettingsForm
     #index = ViewPageTemplateFile('controlpanel.pt')
+    
+    def velruse_plugins(self):
+        acl_users = getToolByName(self.context, 'acl_users')
+        return [plugin for plugin in acl_users.objectValues() if IVelrusePlugin.providedBy(plugin)]
 
