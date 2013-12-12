@@ -12,6 +12,14 @@
   <five:registerPackage package="." initialize=".initialize" />
   <i18n:registerTranslations directory="locales" />
 
+  <include package="plone.app.registry" />
+  <include package="plone.app.z3cform" />
+
+  <permission
+        id="pas.plugins.velruse.permissions.ManageVelruseSettings"
+        title="pas.plugins.velruse: Manage Velruse settings"
+        />
+
   <include package=".browser" />
 
   <five:registerClass 
@@ -55,7 +63,7 @@
         title="Additional Velruse Authentication setup"
         description="PAS plugin installer"
         handler=".setuphandlers.importVarious">
-     <depends name="propertiestool"/>
+     <depends name="plone.app.registry"/>
   </genericsetup:importStep>
 
 </configure>

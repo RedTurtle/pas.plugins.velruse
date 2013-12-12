@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from AccessControl.Permissions import add_user_folders
-#from Products.PluggableAuthService import registerMultiPlugin
+from zope.i18nmessageid import MessageFactory
 
 logger = logging.getLogger('pas.plugins.velruse')
+_ = MessageFactory('pas.plugins.velruse')
 
+#from Products.PluggableAuthService import registerMultiPlugin
+#registerMultiPlugin(VelruseUsers.meta_type)
 from pas.plugins.velruse.plugin import VelruseUsers, AddForm
 
-#registerMultiPlugin(VelruseUsers.meta_type)
 
 def initialize(context):
     context.registerClass(VelruseUsers,

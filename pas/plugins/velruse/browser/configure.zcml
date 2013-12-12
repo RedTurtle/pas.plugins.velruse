@@ -9,4 +9,14 @@
         directory="images"
         />
 
+    <!-- Control panel -->
+    <browser:page
+        name="velruse-settings"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".controlpanel.VelruseSettingsFormView"
+		template="controlpanel.pt"
+        permission="pas.plugins.velruse.permissions.ManageVelruseSettings"
+        layer="..interfaces.IVelruseLayer"
+        />
+
 </configure>

@@ -36,8 +36,12 @@ from pas.plugins.velruse import config
 from pas.plugins.velruse import logger
 from pas.plugins.velruse.events import VelruseFirstLoginEvent
 from pas.plugins.velruse.interfaces import IVelrusePlugin
+from pas.plugins.velruse.interfaces import IVelruseGeneralSettings
 from zope.event import notify
 from zope.interface import implements
+from zope.component import queryUtility
+from plone.registry.interfaces import IRegistry
+
 
 if sys.version_info < (2, 6):
     PLONE4 = False
@@ -208,10 +212,10 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         o Return a connection timeout for velruse call.
         o Timeout is set in velruse_settings.
         """
-        portal_properties = getToolByName(self, 'portal_properties')
-        velruse_settings = getattr(portal_properties, 'velruse_settings')
-        if velruse_settings:
-            return getattr(velruse_settings, 'connection_timeout', 10)
+        registry = queryUtility(IRegistry)
+        settings = registry.forInterface(IVelruseGeneralSettings, check=False)
+        if settings and settings.connection_timeout:
+            return settings.connection_timeout
         return 10
 
     security.declarePrivate('enumerateUsers')

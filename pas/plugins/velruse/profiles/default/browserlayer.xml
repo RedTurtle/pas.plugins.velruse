@@ -1,0 +1,4 @@
+<layers>
+    <layer name="pas.plugins.velruse"
+           interface="pas.plugins.velruse.interfaces.IVelruseLayer" />
+</layers>

@@ -5,6 +5,9 @@ version = '0.1.dev6'
 
 install_requires = [
     'setuptools',
+    'plone.app.registry',
+    'z3c.form',
+    'plone.app.z3cform',
     'Products.PluggableAuthService',
     'Products.PlonePAS',
 ]

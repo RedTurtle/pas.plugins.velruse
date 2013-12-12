@@ -63,9 +63,9 @@
                         target python:test(target in ('_parent', '_top', '_blank', '_self'), target, None);
                         ztu modules/ZTUtils;
                         portal_url context/portal_url;
-                        velruse_settings context/portal_properties/velruse_settings;
-                        activated_plugins velruse_settings/activated_plugins;
-						have_plugins_enabled python:[l for l in activated_plugins if l.split('|')[1]];
+                        site_login_enabled python:context.portal_registry['pas.plugins.velruse.interfaces.IVelruseGeneralSettings.site_login_enabled'];
+						activated_plugins python:context.portal_registry['pas.plugins.velruse.interfaces.IVelruseGeneralSettings.activated_plugins'];
+						have_plugins_enabled python:[l for l in activated_plugins if l.service_url];
 						">
 
             <dl class="portalMessage error"
@@ -80,14 +80,14 @@
                 </dd>
             </dl>
 
-        <dl class="enableFormTabbing" tal:omit-tag="not:velruse_settings/site_login_enabled">
+        <dl class="enableFormTabbing" tal:omit-tag="not:site_login_enabled">
 
                 <dt id="fieldsetlegend-velruse-login" i18n:translate="velruse_login"
-                    tal:condition="velruse_settings/site_login_enabled">
+                    tal:condition="site_login_enabled">
                     Login with...
                 </dt>
 
-                <dd id="fieldset-velruse-login" tal:omit-tag="not:velruse_settings/site_login_enabled">
+                <dd id="fieldset-velruse-login" tal:omit-tag="not:site_login_enabled">
 
                     <h2 i18n:translate="">You can perform authentication with one of those services</h2>
 
@@ -96,11 +96,10 @@
                             <tal:plugin repeat="plugin activated_plugins">
                                 <li class="velrusePlugin"
 								    tal:condition="plugin_url"
-                                    tal:define="plugin_data python:plugin.split('|');
-                                                plugin_title python:plugin_data[0];
-                                                plugin_url python:plugin_data[1];
+                                    tal:define="plugin_title python:plugin.service_name;
+                                                plugin_url python:plugin.service_url;
                                                 plugin_url python: plugin_url.startswith('/') and portal_url + plugin_url or plugin_url;
-                                                plugin_img python:plugin_data[2];
+                                                plugin_img python:plugin.service_icon;
                                                 plugin_img python: plugin_img.startswith('/') and portal_url + plugin_img or plugin_img;">
                                         <a href="" title=""
                                            tal:define="came_from_query python:came_from and '?'+ztu.make_query({'came_from': came_from}) or '';
@@ -126,7 +125,7 @@
 
                 </dd>
 
-                <tal:sitelogin condition="velruse_settings/site_login_enabled">
+                <tal:sitelogin condition="site_login_enabled">
                     <dt id="fieldsetlegend-plone-login" i18n:translate="plone_login">
                         Site login
                     </dt>
