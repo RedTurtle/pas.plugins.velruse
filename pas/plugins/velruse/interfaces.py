@@ -20,7 +20,7 @@ class IVelruseFirstLoginEvent(IPASEvent):
 
 
 class IVelruseGeneralSettings(Interface):
-    
+
     site_login_enabled = schema.Bool(
         title=_(u'Site login enabled'),
         description=_('help_site_login_enabled',
@@ -28,7 +28,7 @@ class IVelruseGeneralSettings(Interface):
         required=False,
         default=True,
     )
-    
+
     activated_plugins = schema.Tuple(
         title=_(u'Authentication services enabled'),
         description=_('help_activated_plugins',

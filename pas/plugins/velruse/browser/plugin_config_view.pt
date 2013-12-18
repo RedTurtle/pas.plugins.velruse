@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="pas.plugins.velruse">
+
+    <metal:head fill-slot="top_slot"
+                tal:define="dummy python:request.set('disable_border',1)" />
+<body>
+  <div metal:fill-slot="prefs_configlet_main"
+       tal:define="template_id string:velruse-plugin-config;
+                  errors options/errors|nothing;">
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="velruse_plugin_config">
+          <tal:name i18n:name="plugin_name" tal:content="here/Title" /> Settings
+      </h1>
+      <form name="plugin_settings"
+            method="post"
+            class="VelrusePluginSettings"
+            tal:attributes="action string:${here/absolute_url}/${template_id}">
+        <div class="field"
+             tal:define="error errors/velruse_server_host| nothing"
+             tal:attributes="class python:error and 'field error' or 'field'">
+          <label for="velruse_server_host" i18n:translate="velruse_server_host_label">
+            Velruse server host
+          </label>
+          <span class="fieldRequired" title="Required"
+                  i18n:attributes="title title_required;"
+                  i18n:translate="label_required">(Required)</span>
+
+          <div class="formHelp" i18n:translate="velruse_server_host_help">
+            Set the server host address.
+          </div>
+
+          <input type="text" 
+                 id="velruse_server_host"
+                 name="velruse_server_host"
+                 size="40"
+                 tal:attributes="value here/velruse_server_host|nothing"
+                 />
+        </div>
+        <div class="field"
+             tal:define="error errors/velruse_auth_info_path| nothing"
+             tal:attributes="class python:error and 'field error' or 'field'">
+          <label for="velruse_auth_info_path" i18n:translate="velruse_auth_info_path_label">
+            Velruse auth info path
+          </label>
+          <span class="fieldRequired" title="Required"
+                  i18n:attributes="title title_required;"
+                  i18n:translate="label_required">(Required)</span>
+
+          <div class="formHelp" i18n:translate="velruse_auth_info_path_help">
+            Set the auth info path.
+          </div>
+
+          <input type="text" 
+                 id="velruse_auth_info_path"
+                 name="velruse_auth_info_path"
+                 size="40"
+                 tal:attributes="value here/velruse_auth_info_path|nothing"
+                 />
+        </div>
+        <div class="field">
+          <label for="given_roles" i18n:translate="given_roles_label">
+            User roles
+          </label>
+          <div class="formHelp" i18n:translate="given_roles_help">
+            Set user roles.
+          </div>
+          <textarea
+                 id="given_roles"
+                 name="given_roles:lines"
+                 rows="5"
+                 cols="20"
+                 style="width:auto;"
+                 tal:content="python:'\n'.join(here.given_roles)" />
+        </div>
+        <input type="submit"
+               class="context"
+               name="form.button.Save"
+               value="Save"
+               i18n:attributes="value label_save;"
+               />
+      </form>
+  </div>
+</body>
+</html>

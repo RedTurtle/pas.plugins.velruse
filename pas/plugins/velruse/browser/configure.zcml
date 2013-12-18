@@ -19,4 +19,13 @@
         layer="..interfaces.IVelruseLayer"
         />
 
+    <!-- Plugin config -->
+    <browser:page
+        name="velruse-plugin-config"
+        for="pas.plugins.velruse.interfaces.IVelrusePlugin"
+        class=".plugin_config.VelrusePluginConfigView"
+        template="plugin_config_view.pt"
+        permission="pas.plugins.velruse.permissions.ManageVelruseSettings"
+        layer="..interfaces.IVelruseLayer"
+        />
 </configure>
