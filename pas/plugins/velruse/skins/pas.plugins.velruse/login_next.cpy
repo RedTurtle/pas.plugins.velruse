@@ -8,7 +8,7 @@
 ##parameters=
 ##title=Login next actions
 
-from Products.CMFPlone import PloneMessageFactory as _
+from Products.CMFPlone import PloneMessageFactory as pmf
 import ZTUtils
 
 REQUEST = context.REQUEST
@@ -17,7 +17,7 @@ util = context.plone_utils
 membership_tool = context.portal_membership
 if membership_tool.isAnonymousUser():
     REQUEST.RESPONSE.expireCookie('__ac', path='/')
-    util.addPortalMessage(_(u'Login failed'), 'error')
+    util.addPortalMessage(pmf(u'Login failed'), 'error')
     return state.set(status='failure')
 
 came_from = REQUEST.get('came_from', None)
@@ -63,7 +63,7 @@ if came_from and not next:
     # confusion
     # may arise. Redirect only if we know for sure that cookies are enabled.
 
-    util.addPortalMessage(_(u'Welcome! You are now logged in.'))
+    util.addPortalMessage(pmf(u'Welcome! You are now logged in.'))
     came_from = util.urlunparse((scheme, location, path, parameters,
                                 query, fragment))
 

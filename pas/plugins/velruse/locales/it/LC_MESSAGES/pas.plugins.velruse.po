@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-06-13 20:42+0000\n"
+"POT-Creation-Date: 2013-12-20 16:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: Luca Fabbri <keul@redturtle.it>\n"
 "Language-Team: RedTurtle Technology <sviluppoplone@redturtle.it>\n"
@@ -20,25 +20,233 @@ msgstr ""
 msgid "Allows users to log in with social networks through Velruse"
 msgstr "Permette agli utenti di autenticarsi nel sito usando Velruse"
 
+#: ../interfaces.py:33
+msgid "Authentication services enabled"
+msgstr "Servizi di autenticazione abilitati"
+
+#: ../browser/plugin_config_view.pt:16
+msgid "Back to general Velruse settings"
+msgstr "Torna alle impostazioni generali di Velruse"
+
+#: ../browser/plugin_config_view.pt:161
+msgid "Blacklist management"
+msgstr "Gestione della blacklist"
+
+#: ../browser/plugin_config_view.pt:129
+msgid "Blacklisted?"
+msgstr "In blacklist?"
+
+#: ../browser/controlpanel.py:50
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../browser/controlpanel.py:46
+msgid "Changes saved"
+msgstr "Modifiche memorizzate"
+
+#: ../interfaces.py:44
+msgid "Connection timeout"
+msgstr "Timeout connessione"
+
+#: ../browser/controlpanel.py:52
+msgid "Edit cancelled"
+msgstr "Modifiche annullate"
+
+#: ../browser/controlpanel.pt:49
+msgid "General site settings"
+msgstr "Impostazioni generali del sito"
+
+#: ../persistent.py:24
+msgid "Icon"
+msgstr "Icona"
+
+#: ../browser/plugin_config_view.pt:180
+msgid "Load blacklist"
+msgstr "Carica blacklist"
+
+#: ../browser/plugin_config_view.pt:127
+#: ../persistent.py:12
+msgid "Name"
+msgstr "Nome"
+
+#: ../browser/plugin_config_view.pt:199
+msgid "No entries in the blacklist"
+msgstr "Nessun elemento della blacklist"
+
+#: ../browser/plugin_config_view.pt:148
+msgid "No results"
+msgstr "Nessun risultato"
+
+#: ../browser/controlpanel.pt:54
+msgid "PAS plugins configuration"
+msgstr "Configurazione dei plugin PAS"
+
+#: ../browser/plugin_config_view.pt:204
+msgid "Remove selected"
+msgstr "Rimuovi selezionati"
+
+#: ../browser/plugin_config_view.pt:128
+msgid "Remove user"
+msgstr "Rimuovi utente"
+
+#: ../browser/plugin_config_view.pt:185
+msgid "Remove?"
+msgstr "Rimuovere?"
+
+#: ../browser/controlpanel.py:39
+msgid "Save"
+msgstr "Salva"
+
+#: ../browser/plugin_config_view.pt:123
+msgid "Search"
+msgstr "Cerca"
+
+#: ../browser/plugin_config_view.pt:121
+msgid "Search for Velruse users"
+msgstr "Cerca utenti Velruse"
+
+#: ../browser/plugin_config.py:25
+msgid "Settings saved"
+msgstr "Modifiche Salvate"
+
+#: ../interfaces.py:25
+msgid "Site login enabled"
+msgstr "Login del sito abilitato"
+
+#: ../persistent.py:17
+msgid "URL or path"
+msgstr "URL o percorso"
+
+#: ../browser/plugin_config_view.pt:99
+msgid "Users management"
+msgstr "Gestione utenti"
+
 msgid "Velruse authentication plugin"
 msgstr "Plugin di autenticazione Velruse"
 
-#: ../skins/pas.plugins.velruse/login_form.cpt:100
+#: ../interfaces.py:38
+msgid "Velruse backend"
+msgstr ""
+
+#: ../browser/controlpanel.py:24
+#: ../profiles/default/controlpanel.xml
+msgid "Velruse integration settings"
+msgstr "Impostazioni integrazione Velruse"
+
+#: ../skins/pas.plugins.velruse/login_form.cpt:92
 msgid "You can perform authentication with one of those services"
 msgstr "Puoi autenticarti usando uno dei seguenti servizi"
 
+#. Default: "If you deleted a blacklisted user you are not able to find it from the section above. Use this form for cleaning up old blacklisted entries"
+#: ../browser/plugin_config_view.pt:163
+msgid "blacklist_management_help"
+msgstr ""
+"Se hai eliminato un utente non sarai più in grado di trovarlo dal modulo qui sopra.\n"
+"Usa questo modulo per ripulire vecchi inserimenti nella black list"
+
+#. Default: "A set of roles this plugin will automatically gives to authenticated members"
+#: ../browser/plugin_config_view.pt:79
+msgid "given_roles_help"
+msgstr "Un insieme di ruoli che il plugin dovrà automaticamente fornire agli utenti autenticati"
+
+#. Default: "User roles"
+#: ../browser/plugin_config_view.pt:76
+msgid "given_roles_label"
+msgstr "Ruoli utente"
+
+#. Default: "Provide a list of authentication services properly configured on the Velruse backend"
+#: ../interfaces.py:34
+msgid "help_activated_plugins"
+msgstr "Fornisci una lista di servizi di autenticazioni configurati sul backend Verlruse"
+
+#. Default: "Max number of seconds to wait for Velruse backend response"
+#: ../interfaces.py:45
+msgid "help_connection_timeout"
+msgstr "Massimo numero di secondi per aspettare una risposta da Velruse"
+
+#. Default: "If checked, the default Plone login form will be preserved"
+#: ../interfaces.py:26
+msgid "help_site_login_enabled"
+msgstr "Se selezionato, il login predefinito di Plone verrà mantenuto"
+
+#. Default: "Configure how Plone talk with Velruse backend"
+#: ../browser/controlpanel.py:25
+msgid "help_velruse_settings_form"
+msgstr "Configura come Plone comunica con il backend Velruse"
+
 #. Default: "Authentication with other services is not available. Contact the site administrator."
-#: ../skins/pas.plugins.velruse/login_form.cpt:124
+#: ../skins/pas.plugins.velruse/login_form.cpt:121
 msgid "no_plugin_activated"
 msgstr "L'autenticazione con altri servizi non è disponibile. Contatta l'amministratore del sito."
 
 #. Default: "Site login"
-#: ../skins/pas.plugins.velruse/login_form.cpt:132
+#: ../skins/pas.plugins.velruse/login_form.cpt:129
 msgid "plone_login"
 msgstr "Login del sito"
 
+#. Default: "Select a PAS plugin for managing it's configuration"
+#: ../browser/controlpanel.pt:68
+msgid "plugins-config-help"
+msgstr "Seleziona un plugin PAS per gestirne la configurazione"
+
+#. Default: "From this section you can search for users stored in this plugin. This mean: users that logged in using this Velruse backend. You can delete user's data stored and/or blacklist users. Blacklisted users are not able to authenticate anymore (can be useful to block spammer/trolling people)."
+#: ../browser/plugin_config_view.pt:101
+msgid "user_management_help"
+msgstr ""
+"Da questa sezione puoi ricercare gli utenti memorizzati nel plugin.\n"
+"Questo significa: utenti che hanno eseguito il log-in usando questo backend Velruse.\n"
+"Puoi cancellare i dati degli utenti memorizzare e/o metterli nella blacklist.\n"
+"Gli utenti nella blacklisr non sono in grado di autenticarsi di nuovo (può essere utile per bloccare utenti spammer o troll)."
+
+#. Default: "$count users deleted"
+#: ../browser/plugin_config.py:54
+msgid "users_delete_message"
+msgstr "$count utenti eliminati"
+
+#. Default: "Set the auth info path"
+#: ../browser/plugin_config_view.pt:64
+msgid "velruse_auth_info_path_help"
+msgstr "Imposta il percordo di auth info"
+
+#. Default: "Velruse auth info path"
+#: ../browser/plugin_config_view.pt:56
+msgid "velruse_auth_info_path_label"
+msgstr "Percordo di auth info Velruse"
+
+#. Default: "An URL (can also be a relative path) to an icon to be displayed in the login form. Best format is 64x64px."
+#: ../persistent.py:25
+msgid "velruse_backend_icon_help"
+msgstr "Un URL (può essere anche un percorso relativo) ad un'icona da mostrare nella form di login. Formato migliore è 64x64px."
+
+#. Default: "The name of the social network/authentication service"
+#: ../persistent.py:13
+msgid "velruse_backend_name_help"
+msgstr "Nome del social network/sistema di autenticazione"
+
+#. Default: "An URL (can also be a relative path) to Velruse.\nThis URL must be properly configured in Velruse to call the remote service"
+#: ../persistent.py:18
+msgid "velruse_backend_url_help"
+msgstr ""
+"Un URL (può anche essere un percordo relativo) a Velruse.\n"
+"Questo URL deve essere configurato a dovere in Velruse per chiamare il servizio remoto di autenticazione"
+
 #. Default: "Login with..."
-#: ../skins/pas.plugins.velruse/login_form.cpt:93
+#: ../skins/pas.plugins.velruse/login_form.cpt:85
 msgid "velruse_login"
 msgstr "Login con..."
+
+#. Default: "${plugin_name} Settings"
+#: ../browser/plugin_config_view.pt:25
+msgid "velruse_plugin_config"
+msgstr "Impostazioni ${plugin_name}"
+
+#. Default: "Set the server host address where Velruse is listening"
+#: ../browser/plugin_config_view.pt:42
+msgid "velruse_server_host_help"
+msgstr "Imposta un host del server dove Velruse è in ascolto"
+
+#. Default: "Velruse server host"
+#: ../browser/plugin_config_view.pt:34
+msgid "velruse_server_host_label"
+msgstr "Host server Velruse"
 
