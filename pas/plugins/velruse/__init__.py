@@ -17,5 +17,5 @@ def initialize(context):
                           permission=add_user_folders,
                           constructors=(AddForm,),
                           visibility=None,
-                          icon='openid.png'
+                          icon='browser/images/openid.png'
                           )

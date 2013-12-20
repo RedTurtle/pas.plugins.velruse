@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<object name="portal_controlpanel"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="pas.plugins.velruse">
+
+    <configlet
+        title="Velruse integration settings"
+        action_id="velruse-settings"
+        appId="pas.plugins.velruse"
+        category="Products"
+        condition_expr=""
+        icon_expr="string:${portal_url}/++resource++pas.plugins.velruse.images/openid.png"
+        url_expr="string:${portal_url}/@@velruse-settings"
+        visible="True"
+        i18n:attributes="title">
+            <permission>pas.plugins.velruse: Manage Velruse settings</permission>
+    </configlet>
+
+</object>

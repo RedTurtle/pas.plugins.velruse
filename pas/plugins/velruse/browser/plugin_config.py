@@ -1,25 +1,78 @@
 # -*- coding: utf-8 -*-
+
 from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
+from pas.plugins.velruse import _
+from DateTime import DateTime
 
 
 class VelrusePluginConfigView(BrowserView):
     """Config view"""
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self._results = []
+        request.set('disable_border', True)
+
     def __call__(self):
-        """
-        """
-        if self.request.form.get('form.button.Save', ''):
+        form = self.request.form
+        if form.get('form.button.Save', ''):
             errors = self.saveSettings()
             if errors:
                 return self.index(errors=errors)
             else:
-                return self.doReturn("Settings save", 'info')
+                return self.doReturn(_("Settings saved"), 'info')
+        elif form.get('apply'):
+            self.apply_changes(form.get('user', []))
+        elif form.get('form.submitted'):
+            self._search()
         return self.index()
 
+    def apply_changes(self, users):
+        delete_count = 0
+        storage = self.context._storage
+        blstorage = self.context._blacklist
+        for user in users:
+            if user.get('delete'):
+                try:
+                    del storage[user.get('id')]
+                    delete_count += 1
+                except KeyError:
+                    pass
+            if user.get('blacklist'):
+                blstorage[user.get('id')] = DateTime()
+            else:
+                try:
+                    del blstorage[user.get('id')]
+                except KeyError:
+                    pass
+        if delete_count>0:
+            ptool = getToolByName(self.context, 'plone_utils')
+            ptool.addPortalMessage(_('users_delete_message',
+                                     default="$count users deleted",
+                                     mapping={'count': delete_count}))
+
+    def _blacklistUsers(self, user_ids):
+        """Add a set of user ids to blacklist"""
+        storage = self.context._blacklist
+        for userid in user_ids:
+            storage[userid] = DateTime()
+
+    def is_blacklisted(self, userid):
+        storage = self.context._blacklist
+        return userid in storage     
+
+    def _search(self):
+        query = self.request.form.get('query')
+        context = self.context
+        acl_users = getToolByName(context, 'acl_users')
+        self._results = [u for u in acl_users.searchUsers(fullname=query) if u.get('plugin_id')==self.context.getId()]
+        
+    def search_results(self):
+        return self._results
+
     def saveSettings(self):
-        """
-        """
         errors = {}
         velruse_server_host = self.request.form.get('velruse_server_host', "")
         velruse_auth_info_path = self.request.form.get('velruse_auth_info_path', "")
@@ -37,5 +90,5 @@ class VelrusePluginConfigView(BrowserView):
     def doReturn(self, message, type):
         pu = getToolByName(self.context, "plone_utils")
         pu.addPortalMessage(message, type=type)
-        return_url = "%s/velruse-plugin-config" % self.context.absolute_url()
+        return_url = "%s/@@velruse-plugin-config" % self.context.absolute_url()
         self.request.RESPONSE.redirect(return_url)

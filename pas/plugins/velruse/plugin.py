@@ -18,6 +18,7 @@ import urlparse
 import re
 import sys
 
+from BTrees.OOBTree import OOBTree
 from AccessControl import ClassSecurityInfo
 from OFS.Image import Image
 from Products.CMFCore.utils import getToolByName
@@ -118,7 +119,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         self.manage_addProperty('velruse_server_host', '127.0.0.1:5020', 'string')
         self.manage_addProperty('velruse_auth_info_path', '/velruse/auth_info', 'string')
         self.manage_addProperty('given_roles', ['Member',], 'lines')
-        #self._storage = OOBTree()
+        self._blacklist = OOBTree()
 
     security.declarePrivate('getRolesForPrincipal')
     def getRolesForPrincipal(self, principal, request=None):
@@ -178,6 +179,9 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             acl_users = getToolByName(self, 'acl_users')
             userid = user_data.get('userid').encode('utf-8')
             username = user_data.get('username').encode('utf-8')
+            if self._blacklist.get(userid):
+                logger.warning("User %s is blacklisted" % (userid))
+                return None
             if not self._storage.get(userid):
                 # userdata not existing: this is the first time we enter here
                 if PLONE4:
@@ -266,7 +270,16 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                     'login': id,
                     'plugin_id': self.getId()},)
         results = []
-        if kw and set(kw.keys()) & set(('fullname', 'email',)):
+        # Panic! Very slow
+        if not kw:
+            for userid, user_data in self._storage.items():
+                results.append({'id': userid, 
+                                'login': userid,
+                                'plugin_id': self.getId(),
+                                'email': user_data.get('email'),
+                                'title': user_data.get('fullname'),
+                                })
+        elif set(kw.keys()) & set(('fullname', 'email',)):
             for userid, user_data in self._storage.items():
                 # BBB potentially very slow
                 if not user_data.get('fullname') and not user_data.get('email'):
@@ -275,7 +288,10 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                         re.search(SEARCH_PATTERN_STR % kw.get('email'), user_data.get('email'), re.I):
                     results.append({'id': userid,
                                     'login': userid,
-                                    'plugin_id': self.getId()})
+                                    'plugin_id': self.getId(),
+                                    'email': user_data.get('email'),
+                                    'title': user_data.get('fullname'),
+                                    })
         return tuple(results)
 
     security.declarePrivate('setPropertiesForUser')

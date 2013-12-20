@@ -7,6 +7,7 @@
   <browser:resourceDirectory
         name="pas.plugins.velruse.images"
         directory="images"
+        layer="..interfaces.IVelruseLayer"
         />
 
     <!-- Control panel -->
@@ -28,4 +29,5 @@
         permission="pas.plugins.velruse.permissions.ManageVelruseSettings"
         layer="..interfaces.IVelruseLayer"
         />
+
 </configure>
