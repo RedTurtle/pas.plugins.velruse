@@ -13,16 +13,16 @@
 <script type="text/javascript">
 <!--
 (function($){
-	$(document).ready(function() {
-		$('.formTab a').click(function(event) {
-			event.preventDefault();
-			$myfieldset = $('#fieldset-' + $(this).attr('id').replace('fieldsetlegend-', ''));
-			if ($myfieldset.is(':hidden')) {
-				$('.formPanel').toggle();
-				$('.formTab a').toggleClass('selected');
-			}
-		})
-	});
+    $(document).ready(function() {
+        $('.formTab a').click(function(event) {
+            event.preventDefault();
+            $myfieldset = $('#fieldset-' + $(this).attr('id').replace('fieldsetlegend-', ''));
+            if ($myfieldset.is(':hidden')) {
+                $('.formPanel').toggle();
+                $('.formTab a').toggleClass('selected');
+            }
+        })
+    });
 })(jQuery);
 //-->
 </script>
@@ -64,19 +64,19 @@
             </div>
         </dd>
         <dd id="fieldset-plugins-config" class="formPanel" style="display:none">    
-		
-			<p i18n:translate="plugins-config-help" class="discreet">
-				Select a PAS plugin for managing it's configuration
-			</p>
-		    
+        
+            <p i18n:translate="plugins-config-help" class="discreet">
+                Select a PAS plugin for managing it's configuration
+            </p>
+            
             <ul tal:define="plugins view/velruse_plugins"
-			    tal:condition="plugins">
-            	<li tal:repeat="plugin plugins">
-            		<a href=""
-					   tal:attributes="href string:${plugin/absolute_url}/@@velruse-plugin-config"
-					   tal:content="plugin/title">Tuitter</a>
-				</li>
-			</ul>
+                tal:condition="plugins">
+                <li tal:repeat="plugin plugins">
+                    <a href=""
+                       tal:attributes="href string:${plugin/absolute_url}/@@velruse-plugin-config"
+                       tal:content="plugin/title">Tuitter</a>
+                </li>
+            </ul>
         </dd>
         </dl>
     </div>
