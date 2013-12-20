@@ -13,13 +13,13 @@
        tal:define="template_id string:velruse-plugin-config;
                   errors options/errors|nothing;">
 
-	  <a href=""
+      <a href=""
          id="setup-link"
          tal:attributes="href string:$portal_url/@@velruse-settings"
          i18n:translate="">
         Back to general Velruse settings
       </a>
-	
+    
       <h1 class="documentFirstHeading"
           i18n:translate="velruse_plugin_config">
           <tal:name i18n:name="plugin_name" tal:content="here/title" /> Settings
@@ -92,15 +92,22 @@
                i18n:attributes="value label_save;"
                />
       </form>
-	  
-	  <h2 i18n:translate="">Users management</h2>
-	  
-        <form class="enableAutoFocus" method="post" action="" id="searchVelruseUsers"
+      
+      <h2 i18n:translate="">Users management</h2>
+
+      <p class="discreet" i18n:translate="user_management_help">
+          From this section you can search for users stored in this plugin.
+		  This mean: users that logged in using this Velruse configuration backend.
+		  You can delete user's data stored and/or blacklist users.
+		  Blacklisted users are not able to authenticate anymore (can be useful to block spammer/trolling
+		  people).
+      </p>
+      
+      <form class="enableAutoFocus" method="post" action="" id="searchVelruseUsers"
               tal:attributes="action string:${context/absolute_url}/@@${view/__name__}"
               tal:define="search_result view/search_results;
-			              form_submitted python:request.get('form.submitted');
+                          form_submitted python:request.get('form.submitted');
                           empty_search python:not search_result and form_submitted;">
-
             <fieldset>
                 <legend>Users data in the plugin</legend>
 
@@ -110,7 +117,7 @@
                         <tr><th colspan="3" class="nosort">
                             <label for="query">Search for Velruse users</label>
                             <input type="text" name="query" value="" id="query" />
-							<input type="submit" class="searchButton" name="search" value="Search" />
+                            <input type="submit" class="searchButton" name="search" value="Search" />
                         </th></tr>
                         <tr tal:condition="python:form_submitted and not empty_search">
                             <th scope="col">Name</th>
@@ -122,16 +129,16 @@
                     <tbody>
                         <tr tal:repeat="user view/search_results">
                             <td>
-                            	<span tal:replace="user/id">Username</span>
-								<span tal:condition="user/title"
-								      tal:content="string:(${user/title})">(name)</span>
-								<input type="hidden" name="user.id:records" value=""
-								       tal:attributes="value user/id" />
-							</td>
+                                <span tal:replace="user/id">Username</span>
+                                <span tal:condition="user/title"
+                                      tal:content="string:(${user/title})">(name)</span>
+                                <input type="hidden" name="user.id:records" value=""
+                                       tal:attributes="value user/id" />
+                            </td>
                             <td><input type="checkbox" name="user.delete:records:boolean"
-							           value="True" /></td>
+                                       value="True" /></td>
                             <td><input type="checkbox" name="user.blacklist:records:boolean"
-									   value="True" tal:attributes="checked python:view.is_blacklisted(user.get('id'))"/></td>
+                                       value="True" tal:attributes="checked python:view.is_blacklisted(user.get('id'))"/></td>
                         </tr>
                         <tr tal:condition="empty_search">
                             <td colspan="3">No results</td>
@@ -139,14 +146,62 @@
                     </tbody>
                 </table>
 
-				<input type="submit" class="context" name="apply" value="Save"
-				       tal:condition="view/search_results" />
+                <input type="submit" class="context" name="apply" value="Save"
+                       tal:condition="view/search_results" />
+
+            </fieldset>
+
+      </form>
+
+      <h2 i18n:translate="">Blacklist management</h2>
+
+      <p class="discreet" i18n:translate="blacklist_management_help">
+          If you deleted a blacklisted user you are not able to find it from the section above.
+		  Use this form for cleaning up old blacklisted entries 
+      </p>
+      
+      <form method="post" action="" id="handleVelruseBlacklist"
+              tal:attributes="action string:${context/absolute_url}/@@${view/__name__}"
+              tal:define="search_result view/load_blacklist;
+                          form_submitted python:request.get('form.blacklist.loaded');
+                          empty_search python:not search_result and form_submitted;">
+            <fieldset>
+                <legend>Blacklist content</legend>
+
+                <input type="hidden" value="1" name="form.blacklist.loaded" />
+                <table class="listing">
+                    <thead>
+                        <tr><th colspan="2" class="nosort">
+                            <input type="submit" name="load" value="Load blacklist" />
+                        </th></tr>
+                        <tr tal:condition="python:form_submitted and not empty_search">
+                            <th scope="col">Name</th>
+                            <th scope="col" class="nosort">Remove?</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                    	<tal:beforeload condition="python: form_submitted and not empty_search">
+	                        <tr tal:repeat="user search_result">
+	                            <td tal:content="user">Username</td>
+	                            <td><input type="checkbox" name="remove_from_blacklist:list"
+	                                       value=""
+										   tal:attributes="value user" /></td>
+	                        </tr>
+						</tal:beforeload>
+                        <tr tal:condition="python: form_submitted and empty_search">
+                            <td colspan="2" i18n:translate="">No entries in the blacklist</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <input type="submit" class="context" name="remove" value="Remove selected"
+                       tal:condition="python: form_submitted and search_result" />
 
             </fieldset>
 
         </form>
 
-	  
   </div>
 </body>
 </html>

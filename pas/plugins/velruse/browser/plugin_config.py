@@ -25,6 +25,8 @@ class VelrusePluginConfigView(BrowserView):
                 return self.doReturn(_("Settings saved"), 'info')
         elif form.get('apply'):
             self.apply_changes(form.get('user', []))
+        elif form.get('remove'):
+            self.clean_blacklist(form.get('remove_from_blacklist', []))
         elif form.get('form.submitted'):
             self._search()
         return self.index()
@@ -71,6 +73,17 @@ class VelrusePluginConfigView(BrowserView):
         
     def search_results(self):
         return self._results
+
+    def load_blacklist(self):
+        return self.context._blacklist.keys()
+
+    def clean_blacklist(self, ids):
+        storage = self.context._blacklist
+        for id in ids:
+            try:
+                del storage[id]
+            except KeyError:
+                pass
 
     def saveSettings(self):
         errors = {}
