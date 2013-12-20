@@ -271,7 +271,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
                     'plugin_id': self.getId()},)
         results = []
         # Panic! Very slow
-        if not kw:
+        if not kw and not id:
             for userid, user_data in self._storage.items():
                 results.append({'id': userid, 
                                 'login': userid,
