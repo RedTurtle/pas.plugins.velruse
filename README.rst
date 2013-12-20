@@ -73,37 +73,33 @@ After Plone restart, add "**Velruse authentication plugin**" product to you Plon
 Configuring pas.plugins.velruse
 -------------------------------
 
-UI settings
-~~~~~~~~~~~
+All configuration are done through the "*Velruse integration settings*" configuration, from the Plone
+control panel.
 
-Inside ZMI you'll find the new ``velruse_settings`` property sheet, unsed the ``portal_properties`` tool.
+General site settings
+~~~~~~~~~~~~~~~~~~~~~
 
-From there you can configure two options:
+The first section is for configuration that globally controls how Plone talk to Velruse, and other user interface
+options.
 
-``site_login_enabled``
+**Site login enabled**
     If you want to keep enabled the standard Plone site login form or not.
-``activated_plugins``
-    A configuration list of available Velruse backends.
-``connection_timeout``
+**Authentication services enabled**
+    A configuration list of available Velruse backends. See below.
+**Connection timeout**
     A timeout value for connection to velruse server.
 
+The "*Authentication services enabled*" configuration is composed by a set of triplets:
 
-The ``activated_plugins`` option above must be configured as a set of triplets. Every triplet use "``|``" character as
-separator, like:: 
-
-    Google|http://127.0.0.1:5020/velruse/login/google|/++resource++google-login-icon.png
-
-Triplet elements must keep that meaning order:
-
-``Service title``
+**Name**
     (optional) A descriptive name of the remote service. For example: "Facebook".
-``Velruse backend URL``
+**URL or path**
     (mandatory) URL or path to the running Velruse service. Please note: this must be a public URL the user must
-    able to access.
-``Service logo URL``
+    able to access. This is not really mandatory, but if not provided the login method is not displayed in the login form.
+**Icon**
     (optional) URL or path for an icon that can recall the service logo.
     
-    Default CSS implementation is for be used with a 64x64px image
+    Default CSS implementation is for 64x64px images.
 
 URLs above can be absolute ("http://auth.yourservice.com/login/facebook") or relative to the portal root URL by
 using a starting slash ("/velruse/login/facebook"). The latter will help you keeping Plone and Velruse behind Apache.
@@ -114,21 +110,15 @@ Those information are used to properly configure the new login form.
    :alt: New login form
    :target: http://blog.redturtle.it/pypi-images/pas.plugins.velruse/pas.plugins.velruse-0.1a1-01.png
 
-**TODO**: move all this stuff to a more user friendly control panel form or Plone registry.
+PAS plugins configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Plugin settings
-~~~~~~~~~~~~~~~
+The other configuration section is relative the Velruse PAS plugin(s).
 
-Another configuration section is inside the PAS plugin created in ``acl_users`` tool.
-
-When installing ``pas.plugins.velruse`` it automatically create and activate a default plugin: **velruse_users**.
-
-Accessing it's "*Properties*" tab you can/must customize some options: 
-
-``velruse_server_host`` 
-    The hostname of the Pyramid Velruse service. For example: ``127.0.0.1:8080`` id Velruse run on the same
+**Velruse server host** 
+    The hostname of the Pyramid Velruse service. For example: ``127.0.0.1:8080`` if Velruse run on the same
     server of Plone.
-``velruse_auth_info_path``
+**Velruse auth info path**
     The configured Pyramid route for calling **auth_info**. Default is ``/velruse/auth_info``.
     
     Keep in mind this warning taken from official Velruse documentation:
@@ -136,10 +126,14 @@ Accessing it's "*Properties*" tab you can/must customize some options:
         The ``/auth_info`` URL should be considered sensitive and only trusted services should be allowed access.
         If an attacker intercepts a an authentication token, they could potentially query /auth_info and learn all of
         the credentials for the user.
-    
-``given_roles``
+
+**User roles**
     Set of default roles automatically given to users that perform authentication with the Velruse plugin.
-    Default to "Members" only.
+    Default to "*Members*" only.
+
+Plus, you have two additional forms: "*Users management*" and "*Blacklist management*" to manage user's data
+inside the plugin. You can delete data or enableadd the user to the **blacklist**.
+Blacklisted users can't authenticate anymore.
 
 Data read by Plone from Velruse
 -------------------------------
