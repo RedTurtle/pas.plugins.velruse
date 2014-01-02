@@ -196,7 +196,7 @@ msgstr ""
 "Da questa sezione puoi ricercare gli utenti memorizzati nel plugin.\n"
 "Questo significa: utenti che hanno eseguito il log-in usando questo backend Velruse.\n"
 "Puoi cancellare i dati degli utenti memorizzare e/o metterli nella blacklist.\n"
-"Gli utenti nella blacklisr non sono in grado di autenticarsi di nuovo (può essere utile per bloccare utenti spammer o troll)."
+"Gli utenti nella blacklist non sono in grado di autenticarsi di nuovo (può essere utile per bloccare utenti spammer o troll)."
 
 #. Default: "$count users deleted"
 #: ../browser/plugin_config.py:54
