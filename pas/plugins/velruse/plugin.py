@@ -130,7 +130,7 @@ class VelruseUsers(ZODBMutablePropertyProvider):
 
         o May assign roles based on values in the REQUEST object, if present.
         """
-        if self._storage.get(principal.getId()):
+        if self._storage.get(principal.getId()) and not self._blacklist.get(principal.getId()):
             return tuple(self.getProperty('given_roles'))
         return ()
 
