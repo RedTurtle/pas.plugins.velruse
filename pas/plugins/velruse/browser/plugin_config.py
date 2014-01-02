@@ -69,7 +69,10 @@ class VelrusePluginConfigView(BrowserView):
         query = self.request.form.get('query')
         context = self.context
         acl_users = getToolByName(context, 'acl_users')
-        self._results = [u for u in acl_users.searchUsers(fullname=query) if u.get('plugin_id')==self.context.getId()]
+        if self.request.form.get('userid') and self.request.form.get('exact_match'):
+            self._results = [u for u in acl_users.searchUsers(id=self.request.form.get('userid'), exact_match=True) if u.get('plugin_id')==self.context.getId()]
+        else:
+            self._results = [u for u in acl_users.searchUsers(fullname=query) if u.get('plugin_id')==self.context.getId()]
         
     def search_results(self):
         return self._results

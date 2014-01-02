@@ -96,7 +96,7 @@
                />
       </form>
       
-      <h2 i18n:translate="">Users management</h2>
+      <a name="usersearch"></a><h2 i18n:translate="">Users management</h2>
 
       <p class="discreet" i18n:translate="user_management_help">
           From this section you can search for users stored in this plugin.
