@@ -328,7 +328,6 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         
                 data = self._storage.get(user.getId())
                 defaults = self._getDefaultValues(isGroup)
-        
                 # provide default values where missing
                 if not data:
                     data = {}
@@ -338,7 +337,6 @@ class VelruseUsers(ZODBMutablePropertyProvider):
         
                 return VelruseMutablePropertySheet(self.id,
                                                    schema=self._getSchema(isGroup), **data)
-
 
     def _format_user_data(self, raw_data):
         """
@@ -357,15 +355,19 @@ class VelruseUsers(ZODBMutablePropertyProvider):
             username = ("%s.%s" % (userid_data.get('domain', ''),
                                    username)).encode('utf-8')
         user_data['username'] = username
-        if raw_data.get('profile', {}).get('emails', []):
-            # BBB: seems that commonly email (up) is stored as string
-            user_data['email'] = raw_data.get('profile', {}).get('emails', [])[0]['value'].encode('utf-8')
-        user_data['fullname'] = raw_data.get('profile', {}).get('name', {}).get('formatted', '') or \
-                    raw_data.get('profile', {}).get('displayName', {})
-        if raw_data.get('profile', {}).get('addresses', []):
-            user_data['location'] = raw_data.get('profile', {}).get('addresses', [])[0].get('formatted', '')
-        if raw_data.get('profile', {}).get('urls', []):
-            user_data['home_page'] = raw_data.get('profile', {}).get('urls', [])[0].get('value', '')
+        for provider, given_properties in config.PROPERTY_PROVIDERS_INFO.items():
+            if username.startswith("%s." % provider):
+                for property_id in [p for p in given_properties]:
+                    if property_id == 'email' and raw_data.get('profile', {}).get('emails', []):
+                        # BBB: seems that commonly email (up) is stored as string
+                        user_data['email'] = raw_data.get('profile', {}).get('emails', [])[0]['value'].encode('utf-8')
+                    if property_id == 'fullname':
+                        user_data['fullname'] = raw_data.get('profile', {}).get('name', {}).get('formatted', '') or \
+                                raw_data.get('profile', {}).get('displayName', {})
+                    if property_id == "addresses" and raw_data.get('profile', {}).get('addresses', []):
+                        user_data['location'] = raw_data.get('profile', {}).get('addresses', [])[0].get('formatted', '')
+                    if property_id == "home_page" and raw_data.get('profile', {}).get('urls', []):
+                        user_data['home_page'] = raw_data.get('profile', {}).get('urls', [])[0].get('value', '')
         # profile's photo
         if raw_data.get('profile', {}).get('photos', []):
             photo_url = raw_data.get('profile', {}).get('photos', [])[0].get('value', '')
