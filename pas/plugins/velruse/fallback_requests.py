@@ -9,7 +9,6 @@ import simplejson as json
 import urllib
 import urllib2
 import socket
-from socket import timeout as Timeout
 
 
 class Response(object):

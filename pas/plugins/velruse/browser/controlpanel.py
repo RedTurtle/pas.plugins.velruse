@@ -3,13 +3,7 @@
 from Products.statusmessages.interfaces import IStatusMessage
 from plone.app.registry.browser import controlpanel
 from z3c.form.browser.checkbox import SingleCheckBoxFieldWidget
-from zope import schema
-from zope.interface import Interface
-from zope.interface import implements
-from plone.z3cform.layout import wrap_form
 from z3c.form import button
-from z3c.form import group
-from z3c.form import form, field
 from pas.plugins.velruse import _
 from pas.plugins.velruse.interfaces import IVelruseGeneralSettings
 from pas.plugins.velruse.interfaces import IVelrusePlugin
