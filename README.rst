@@ -1,4 +1,4 @@
-A PAS plugin for Plone that **authenticate users from social networks** thorugh the use of **Velruse**.
+A PAS plugin for Plone that **authenticate users from social networks** through the use of **Velruse**.
 
 .. contents::
 
@@ -30,8 +30,12 @@ kind of service can't be used.
 
 __ http://comlounge.net/rpx/
 
-Privacy apart, Velruse is open source and easilly pluggable: you can provide authentication providers for new services
+Privacy apart, Velruse is **open source* and **easilly pluggable**: you can provide authentication providers for new services
 not covered by Janrain.
+
+Check also this `Velruse presentation`__ for more.
+
+__ http://www.slideshare.net/amleczko/lost-in-o-auth-learn-velruse-and-get-your-life-back
 
 How to Use
 ==========
@@ -156,7 +160,8 @@ by changing a configuration variable.
     from pas.plugins.velruse.config import PROPERTY_PROVIDERS_INFO
     PROPERTY_PROVIDERS_INFO['yourmagicnewprovider'] = ('fullname', 'email', 'description')
 
-**TODO**: this will probably change in future, maybe replaced by a blacklist of property you *don't* want to read.
+**TODO**: this will probably change in future, maybe replaced by a blacklist of property you *don't* want to read, or
+something configurable TTW.
 
 Requirements
 ============
@@ -187,7 +192,7 @@ This product was developed by RedTurtle Technology team.
    :alt: RedTurtle Technology Site
    :target: http://www.redturtle.it/
 
-Special thanks to `Mauro Amico`__ and `Ben Bangert`__.
+Special thanks to `Mauro Amico`__ and `Ben Bangert`__ (for accepting a couple of mine pull requests).
 
 __ https://github.com/mamico
 __ https://github.com/bbangert
